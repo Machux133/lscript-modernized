@@ -31,54 +31,12 @@ function defaults_lh3
 	CE="\e[0m"
 #red start
 	RS="\e[1;31m"
-#black start
-	BLS="\e[0;30m"
-#dark gray start
-	DGYS="\e[1;30m"
-#light blue start
-	LBS="\e[1;34m"
-#green start
-	GNS="\e[0;32m"
-#light green start
-	LGNS="\e[1;32m"
-#cyan start
-	CYS="\e[0;36m"
-#light cyan start
-	LCYS="\e[1;36m"
-#light red start
-	DRS="\e[0;31m"
-#purple start
-	PS="\e[0;35m"
-#light purple start
-	LPS="\e[1;35m"
-#brown start
-	BRS="\e[0;33m"
-#light gray start
-	LGYS="\e[0;37m"
-#white start
-	WHS="\e[1;37m"
-#setting custom color for logo
-	if [[ -f "$LPATH"/settings/logocolor.txt ]]
-	then
-		read COL < "$LPATH"/settings/logocolor.txt
-	else
-		COL="$RS"
-	fi
 #setting frequent stings
 	YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
-	YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
-	YNONLY="(${YS}y${CE}/${YS}n${CE})"
-	PAKT="Press ${YS}any key$CE to"
 	PAKTC="Press ${YS}any key$CE to continue..."
 	PAKTGB="Press ${YS}any key$CE to go back..."
-	TNI="${RS}Tool is not installed. To install it type '${CE}${YS}install${CE}${RS}'.${CE}"
 #code to read from keyboard without return
 	READAK="read -n 1"
-#default MAC when starting monitor
-	DEFMAC="00:11:22:33:44:55"
-	
-	wififb="wififb"
-	
 #default packets to inject per second on wps unlock with mdk3
 	DPPS=400
 }
@@ -86,26 +44,26 @@ function enable2_wlan
 {
 	echo -e "Enabling $WLANN..."
 	rfkill unblock wifi &> /dev/null; rfkill unblock all &> /dev/null
-	ifconfig "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1  || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
+	ifconfig "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
 }
 function start2_menu
 {
 	echo -e "Enabling $WLANNM..."
 	enable2_wlan
 	echo -e "Killing services..."
-	airmon-ng check kill &> /dev/null && echo -e """$YS""Done""$CE""" && O1=1
+	airmon-ng check kill &> /dev/null && echo -e """$YS""Done""$CE"""
 	echo -e "Starting monitor mode..."
 	if [[ "$ALFA" = "yes" ]]
 	then
 		ifconfig "$WLANN" down
-		iwconfig "$WLANN" mode monitor &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
+		iwconfig "$WLANN" mode monitor &> /dev/null && echo -e """$YS""Done""$CE"""
 		ifconfig "$WLANN" up
 	else
-		airmon-ng start "$WLANN" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
+		airmon-ng start "$WLANN" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE"""
 	fi
 	echo -e "Changing mac address of $WLANNM to 00:11:22:33:44:55..."
 	ifconfig "$WLANNM" down
-	macchanger -m 00:11:22:33:44:55 "$WLANNM" | grep "New MAC:" &> /dev/null && O3=1
+	macchanger -m 00:11:22:33:44:55 "$WLANNM" | grep "New MAC:" &> /dev/null
 	ifconfig "$WLANNM" up && echo -e """$YS""Done""$CE""" 
 }
 function stop2_menu
@@ -113,7 +71,7 @@ function stop2_menu
 	stop2_monitor
 	echo -e "Changing mac address of $WLANN to the original one..."
 	ifconfig "$WLANN" down
-	macchanger -p "$WLANN" | grep "Current MAC:" && O1=1
+	macchanger -p "$WLANN" | grep "Current MAC:"
 	ifconfig "$WLANN" up
 	echo -e """$YS""Done""$CE"""
 }
@@ -131,15 +89,15 @@ function stop2_monitor
 		ifconfig "$WLANN" up && A3=1
 		if [[ "$A1" = 1 && "$A2" = 1 && "$A3" = 1 ]]
 		then
-			echo -e """$YS""Done""$CE""" && O2=1
+			echo -e """$YS""Done""$CE"""
 		else
 			echo -e """$RS""Error stoping monitor mode.""$CE"""
 		fi
 	else
-		airmon-ng stop "$WLANNM" &>/dev/null && echo -e """$YS""Done""$CE""" && O2=1 || echo -e """$RS""Error stoping monitor mode.""$CE"""
+		airmon-ng stop "$WLANNM" &>/dev/null && echo -e """$YS""Done""$CE""" || echo -e """$RS""Error stoping monitor mode.""$CE"""
 	fi
 	echo -e "Starting network-manager service..."
-	service network-manager start && echo -e """$YS""Done""$CE""" && O3=1 || echo -e """$RS""Error starting network-manager service""$CE"""
+	service network-manager start && echo -e """$YS""Done""$CE""" || echo -e """$RS""Error starting network-manager service""$CE"""
 }
 function install_bully
 {
@@ -578,7 +536,7 @@ function pixie_loop
 			if [[ "$TTT" != "" || "$TTTT" != "" ]]
 			then
 				echo -e """$RS""Pin not found. Retrying...""$CE"""
-			elif [[ "$TTT2" != "" || "$TT3" != "" ]]
+			elif [[ "$TTT2" != "" || "$TTT3" != "" ]]
 			then
 				echo -e """$YS""Pin found!!""$CE"""
 				cat "$LPATH"/wpslogloop >> "$LPATH"/wpslog
@@ -714,7 +672,6 @@ do
 		apower[$nnn]="${apower[$nnn]} "
 	fi
 	aessid[$nnn]=$(cat $file | awk -v nn="$nnn" '{if(NR==nn)print $7 " " $8 " " $9 " " $10 " " $11 " " $12}')
-	ti=7
 	#~ while true
 	#~ do
 		#~ essidtest=$(cat $file | awk -v nn="$nnn" -v po="$ti" '{if(NR==nn)print $po}')
@@ -900,7 +857,6 @@ do
 			else
 				LSEQ=""
 			fi
-			LVERBOSITY="-v $VERBOSITY"
 			if [[ "$IGNORELOCKOUT" = "ON" ]]
 			then
 				LIGNORELOCKOUT="-L"

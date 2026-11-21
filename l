@@ -93,7 +93,6 @@ toolarray=(
 	YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
 	YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
 	YNONLY="(${YS}y${CE}/${YS}n${CE})"
-	PAKT="Press ${YS}any key$CE to"
 	PAKTC="Press ${YS}any key$CE to continue..."
 	PAKTGB="Press ${YS}any key$CE to go back..."
 	TNI="${RS}Tool is not installed. To install it type '${CE}${YS}install${CE}${RS}'.${CE}"
@@ -1454,7 +1453,6 @@ then
 			then
 				KSKS="ERROR(fix=recreate the shortcut)"
 			else
-				read currentks < "$KSPATH"/"$TITLE"/"$TITLE"ks.txt
 				size=${#TITLE}
 				calc=$(( 35-size ))
 				numcalc=1
@@ -3136,7 +3134,7 @@ function wifi_tools
 	else
 		echo -e """$RS"" 1""$CE"") ""$RS""Fluxion""$CE""               The future of MITM WPA attacks"
 	fi
-	if [[ $(which wifite) ]]
+	if [[ $(command -v wifite) ]]
 	then
 		echo -e """$YS"" 2""$CE"") Wifite                Automated wireless attack tool"
 	else
@@ -3347,7 +3345,7 @@ function wifi_tools
 		fi
 	elif [[ "$APPP" = "2" ]]
 	then
-		if [[ $(which wifite) ]]
+		if [[ $(command -v wifite) ]]
 		then
 			wifite
 		else
@@ -9294,7 +9292,7 @@ function main_options
 		fi
 	elif [[ "$YORNAA" = "22" ]]
 	then
-		IFTOPT=$(which iftop)
+		IFTOPT=$(command -v iftop)
 		if [[ "$IFTOPT" == "" ]]
 		then
 			apt-get -y install iftop

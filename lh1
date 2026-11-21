@@ -30,53 +30,13 @@ function defaults_lh1
 	CE="\e[0m"
 #red start
 	RS="\e[1;31m"
-#black start
-	BLS="\e[0;30m"
-#dark gray start
-	DGYS="\e[1;30m"
-#light blue start
-	LBS="\e[1;34m"
-#green start
-	GNS="\e[0;32m"
-#light green start
-	LGNS="\e[1;32m"
-#cyan start
-	CYS="\e[0;36m"
-#light cyan start
-	LCYS="\e[1;36m"
-#light red start
-	DRS="\e[0;31m"
-#purple start
-	PS="\e[0;35m"
-#light purple start
-	LPS="\e[1;35m"
-#brown start
-	BRS="\e[0;33m"
-#light gray start
-	LGYS="\e[0;37m"
-#white start
-	WHS="\e[1;37m"
-#setting custom color for logo
-	if [[ -f "$LPATH"/settings/logocolor.txt ]]
-	then
-		read COL < "$LPATH"/settings/logocolor.txt
-	else
-		COL="$RS"
-	fi
 #setting frequent stings
 	YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
 	YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
-	YNONLY="(${YS}y${CE}/${YS}n${CE})"
-	PAKT="Press ${YS}any key$CE to"
 	PAKTC="Press ${YS}any key$CE to continue..."
 	PAKTGB="Press ${YS}any key$CE to go back..."
-	TNI="${RS}Tool is not installed. To install it type '${CE}${YS}install${CE}${RS}'.${CE}"
 #code to read from keyboard without return
 	READAK="read -n 1"
-#default MAC when starting monitor
-	DEFMAC="00:11:22:33:44:55"
-	
-	wififb="wififb"
 }
 function dash_calc
 {
