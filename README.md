@@ -27,6 +27,38 @@ A video sstec made:         https://www.youtube.com/watch?v=gSO7c2MN7TY
 This is a script for Kali Linux that automates many procedures about wifi penetration and hacking.
 I actually made it for fun for me just to save some time, but i don't mind publicing it.
 
+### Changes in this version (compared to the original arismelachroinos/lscript)
+
+This fork went through a maintenance/cleanup pass focused on correctness and keeping up
+with current tooling, without changing the menus or workflow you already know:
+
+- **`ifconfig`/`iwconfig` replaced with `ip`/`iw`** (net-tools is deprecated upstream and
+  isn't installed by default on several current distros anymore; iproute2 is).
+- **Several real bugs fixed**, found while cleaning up ShellCheck warnings:
+  - WPS pin-found detection in the pixie/bully flow had a typo (`$TT3` instead of `$TTT3`)
+    that made it never recognize a successful crack.
+  - A missing `$` in two places meant a handshake-status check and a colored status
+    message were comparing/printing the literal variable name instead of its value.
+  - The Dr0p1t-Framework builder's "disable UAC" option built its flag into the wrong
+    variable name, so it was never actually passed to the tool.
+  - The MorphHTA (morph-hta.py) integration had its technique picker (mshta/explorer/
+    wmiprvse) silently dropped and every other flag shifted by one slot.
+  - Old `.csv`/`.netxml` handshake files were never cleaned up on opening the handshake
+    menu because of a glob that can't match inside a quoted `-f` test.
+  - A `rm -r` on the keyboard-shortcuts folder had no guard against the target variable
+    ever being empty.
+- **~3700 ShellCheck warnings resolved** (quoting bugs, dead/unused variables, a
+  malformed `awk` program block, an `ls | grep` replaced with a direct file test, etc.),
+  down to a small, documented list of "feature looks unfinished" cases left for a human
+  decision rather than guessed at.
+- **Added a ShellCheck GitHub Actions workflow** so future changes get checked automatically.
+
+None of this changes how you use the script day to day - it's the same menus and
+keyboard shortcuts as before. The `ip`/`iw` migration was reviewed line by line and
+sanity-checked against sample output, but (lacking real wireless hardware to test
+against) hasn't been field-tested yet - if you hit anything odd with monitor mode or
+local-IP detection, please open an issue.
+
 ### Features
 
    ### NEW FEATURE: Custom keyboard shortcuts!! Launch any tool within lscript , with your own shortcuts!!! (type ks to set your shortcuts)
