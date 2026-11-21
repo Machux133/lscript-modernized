@@ -230,15 +230,14 @@ do
 		echo -e """$YS"" 6""$CE"") Autocheck for handshake"
 		#echo -e ""$YS" 7"$CE") Empty the file (when big & no handshake)"
 	fi
-	#~ if [[ "$LASTOPTIONS" != "" ]]
-	#~ then
-		#~ echo -e ""$YS"ENTER"$CE") Last option"
-	#~ fi
+	if [[ "$LASTOPTIONS" != "" ]]
+	then
+		echo -e """$YS""ENTER""$CE"") Repeat last deauth option"
+	fi
 	echo -e """$YS"" 0""$CE"") Exit"
 	read DT
 	if [[ "$DT" = 1 ]]
 	then
-		PER=0
 		echo -e "Number of deauths to send(""$YS""0""$CE""=inf)(""$YS""Enter""$CE""=0): "
 		read -e DEAUTHS
 		if [[ -z "$DEAUTHS" ]]
@@ -274,11 +273,10 @@ do
 		export DIS
 		export DPT
 		clear
-		PER=1
 		LASTOPTIONS="4"
 		find_pid
 		export AVPID
-		xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit' & disown
+		xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit; exec bash' & disown
 	elif [[ "$DT" == 5 ]]
 	then
 		if [[ "$HANDF" != "deauth" ]]
@@ -301,6 +299,20 @@ do
 				then
 					clear
 					break
+				fi
+				if [[ "$CHW" = 1 || "$CHW" = 2 ]] && [[ "$VALIDH" = "0" ]]
+				then
+					echo -e ""
+					echo -e "Delete this handshake capture?(y/n)(Enter=n): "
+					read HSDEL
+					if [[ "$HSDEL" = "y" ]]
+					then
+						rm -f /root/handshakes/"$HANDF"-01.*
+						echo -e "Deleted."
+						sleep 1
+						clear
+						break
+					fi
 				fi
 			done
 		fi
@@ -330,24 +342,18 @@ do
 				sleep 2
 			fi
 		fi
-	#~ elif [[ "$DT" == "" ]]
-	#~ then
-		#~ if [[ "$HANDFORDEAUTH" != "" ]]
-		#~ then
-			#~ if [[ "$LASTOPTIONS" != "" ]]
-			#~ then
-				#~ if [[ "$LASTOPTIONS" = 1 ]]
-				#~ then
-					#~ option3
-				#~ elif [[ "$LASTOPTIONS" = 4 ]]
-				#~ then
-					#~ xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e "while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit" & disown
-				#~ else
-					#~ xterm -geometry 90x15+9999+999999 -e bash -c "$LASTOPTIONS; exec bash" & disown
-				#~ fi
-			#~ fi
-		#~ fi
-		#~ sleep 2
+	elif [[ "$DT" == "" && "$HANDFORDEAUTH" != "" && "$LASTOPTIONS" != "" ]]
+	then
+		if [[ "$LASTOPTIONS" = 1 ]]
+		then
+			option3
+		elif [[ "$LASTOPTIONS" = 4 ]]
+		then
+			xterm -geometry 90x15+9999+999999 -T "DEAUTHING" -e bash -c 'while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit; exec bash' & disown
+		else
+			xterm -geometry 90x15+9999+999999 -e bash -c "$LASTOPTIONS; exec bash" & disown
+		fi
+		sleep 2
 	elif [[ "$DT" = 2 ]]
 	then
 		echo "$TARGB" > /root/mdk3bssid.txt
