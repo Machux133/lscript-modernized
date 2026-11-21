@@ -19,4 +19,12 @@ jobs:
           check_together: 'yes'
           # Most scripts in this repo have no file extension, so they need
           # to be listed explicitly for ShellCheck to pick them up.
-          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh lib/pkg-and-terminal.sh lib/tool-installers.sh mitm-helpers/dns2proxy.sh mitm-helpers/arpspoof-poison-target.sh mitm-helpers/arpspoof-poison-gateway.sh'
+          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh mitm-helpers/dns2proxy.sh mitm-helpers/arpspoof-poison-target.sh mitm-helpers/arpspoof-poison-gateway.sh'
+          # lib/*.sh are only ever sourced from `l` (never run standalone) and
+          # are already analyzed as part of checking `l`, via the `# shellcheck
+          # source=` directives at the top of that file. Scanning them again
+          # here too would make ShellCheck treat each one as its own separate
+          # entry point, losing all cross-file context (every variable one
+          # function sets for another to read looks "unused"/"unassigned"),
+          # which is pure noise, not a real finding.
+          ignore_paths: 'lib'
