@@ -20,10 +20,49 @@ then
 	exit 1
 fi
 
+#############################
+# minimal apt/dnf abstraction so this installer also works on
+# Fedora/RHEL-family systems, not just Debian/Kali/Parrot
+#############################
+if command -v apt-get &> /dev/null
+then
+	PKGMGR="apt"
+elif command -v dnf &> /dev/null
+then
+	PKGMGR="dnf"
+else
+	PKGMGR="unknown"
+fi
+function pkg_install
+{
+	#package names are given as their apt name; translate the few
+	#that differ on dnf-based systems
+	if [[ "$PKGMGR" = "apt" ]]
+	then
+		apt-get -y install "$@"
+	elif [[ "$PKGMGR" = "dnf" ]]
+	then
+		local pkgs=()
+		local p
+		for p in "$@"
+		do
+			if [[ "$p" = "ncurses-dev" ]]
+			then
+				pkgs+=("ncurses-devel")
+			else
+				pkgs+=("$p")
+			fi
+		done
+		dnf -y install "${pkgs[@]}"
+	else
+		echo -e "No supported package manager (apt-get/dnf) found. Install manually: $*"
+	fi
+}
+
 echo -e "Press \e[1;33many key\e[0m to install the script..."
 read -n 1 -r
 clear
-apt-get -y install gnome-terminal
+pkg_install gnome-terminal
 clear
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -66,7 +105,7 @@ done
 
 clear
 #required for gui
-apt-get -y install ncurses-dev
+pkg_install ncurses-dev
 clear
 
 if [[ ! -d /root/handshakes ]]
