@@ -19,4 +19,4 @@ jobs:
           check_together: 'yes'
           # Most scripts in this repo have no file extension, so they need
           # to be listed explicitly for ShellCheck to pick them up.
-          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh ls/dns2proxy.sh ls/arpspoof-poison-target.sh ls/arpspoof-poison-gateway.sh'
+          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh mitm-helpers/dns2proxy.sh mitm-helpers/arpspoof-poison-target.sh mitm-helpers/arpspoof-poison-gateway.sh'

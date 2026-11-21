@@ -1747,7 +1747,7 @@ then
 		export TARGIP
 		export PORTTCP
 		export PORTUDP
-		cd "$LPATH"/ls || exit
+		cd "$LPATH"/mitm-helpers || exit
 		open_terminal "60x12+0+999999" "./dns2proxy.sh"
 		open_terminal "60x20+999999+999999" "./arpspoof-poison-gateway.sh"
 		open_terminal "60x20+999999+0" "./arpspoof-poison-target.sh"
@@ -1778,7 +1778,7 @@ then
 		export TARGIP
 		export PORTTCP
 		export PORTUDP
-		cd "$LPATH"/ls || exit
+		cd "$LPATH"/mitm-helpers || exit
 		open_terminal "60x25+0+999999" "./dns2proxy.sh"
 		open_terminal "60x25+999999+0" "./arpspoof-poison-target.sh"
 		open_terminal "60x25+999999+999999" "./arpspoof-poison-gateway.sh"
@@ -1873,7 +1873,7 @@ then
 		export GATEINT
 		export TARGIP
 		export GATENM
-		cd "$LPATH"/ls || exit
+		cd "$LPATH"/mitm-helpers || exit
 		open_terminal "60x15+999999+0" "./arpspoof-poison-target.sh"
 		open_terminal "60x15+999999+999999" "./arpspoof-poison-gateway.sh"
 	#~ elif [[ "$MITMSET" = "4" ]]
