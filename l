@@ -3466,6 +3466,7 @@ function wifi_tools
 			cd /root/fluxion || exit
 			#~ if [[ -f /root/fluxion/fluxion ]]
 			#~ then
+				# shellcheck disable=SC2211 # intentional: run whatever the cloned fluxion script is actually named
 				./fluxion*
 			#~ elif [[ -f /root/fluxion/fluxion.sh ]]
 			#~ then
@@ -3613,7 +3614,8 @@ function wifi_tools
 		if [[ -d "/root/Dracnmap" ]]
 		then
 			cd /root/Dracnmap/ || exit
-			./dracnmap-v*.sh	
+			# shellcheck disable=SC2211 # intentional: run whatever version-numbered dracnmap script was actually cloned
+			./dracnmap-v*.sh
 			cd || exit		
 		else
 			echo -e "$TNI"
@@ -7021,7 +7023,6 @@ function new_terminal
 			open_terminal "87x35+9999+0" "lh1"
 			sleep 1
 			exec bash "$0"
-			break
 		elif [[ "$YORNAA" = "11" ]]
 		then
 			clear
@@ -7030,7 +7031,6 @@ function new_terminal
 			open_terminal "80x25+9999+0" "lh3"
 			sleep 1
 			exec bash "$0"
-			break
 		elif [[ "$YORNAA" = "12" ]]
 		then
 			echo -e "Moving into new terminal..."
@@ -7038,7 +7038,6 @@ function new_terminal
 			open_terminal "80x25+9999+0" "lh4"
 			sleep 1
 			exec bash "$0"
-			break
 		fi
 	fi
 	done
