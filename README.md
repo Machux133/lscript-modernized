@@ -58,10 +58,15 @@ with current tooling, without changing the menus or workflow you already know:
   a real install path instead (git clone + build, the official Rapid7 installer, Wine,
   etc. - whatever each project's own docs recommend). OpenVAS/Greenbone genuinely has no
   safe way to automate on Fedora (upstream only supports Docker Compose or a source
-  build), so that one just points you at Greenbone's own docs. `bcrypt` was confirmed
-  live on Fedora 44 - `dnf install bcrypt` pulls a build with encryption fully enabled,
-  unlike Debian's decrypt-only one. The rest of the package-manager work is still
-  untested on a real install - please report any issues you hit.
+  build), so that one just points you at Greenbone's own docs. Every package name this
+  maps to dnf has been checked live against Fedora 44's actual repos with
+  `dnf repoquery --whatprovides` (read-only, no installs) - `bcrypt` was also installed
+  and round-tripped for real: `dnf install bcrypt` pulls a build with encryption fully
+  enabled, unlike Debian's decrypt-only one. `sqlmap`, `wifite` and `netdiscover` turned
+  out to have no Fedora package at all (my first guess was wrong) and now build from
+  source instead; `netdiscover`'s upstream build has known issues on current systems and
+  may still need manual fixing. Installing the git-clone-based tools themselves is still
+  untested on a real run - please report any issues you hit.
 - **KDE support (`konsole`).** lscript used to hard-depend on `gnome-terminal` for every
   pop-up window (deauth helper, handshake capture, etc.). It now also supports `konsole`
   (confirmed working live on KDE Plasma/Fedora 44 - opens, runs a compound shell command
