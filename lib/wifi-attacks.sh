@@ -593,7 +593,7 @@ do
 				then
 					ICON="OFF"
 					break
-				elif [[ "$ICON" = "m" ]]
+				elif [[ "$ICON" = "cp" ]]
 				then
 					clear
 					echo -e "Your file path: "
@@ -640,7 +640,7 @@ do
 				then
 					RUNVBS="OFF"
 					break
-				elif [[ "$RUNVBS" = "m" ]]
+				elif [[ "$RUNVBS" = "cp" ]]
 				then
 					clear
 					echo -e "Your file path: "
@@ -687,7 +687,7 @@ do
 				then
 					RUNPOW="OFF"
 					break
-				elif [[ "$RUNPOW" = "m" ]]
+				elif [[ "$RUNPOW" = "cp" ]]
 				then
 					clear
 					echo -e "Your file path: "
@@ -734,7 +734,7 @@ do
 				then
 					RUNBAT="OFF"
 					break
-				elif [[ "$RUNBAT" = "m" ]]
+				elif [[ "$RUNBAT" = "cp" ]]
 				then
 					clear
 					echo -e "Your file path: "
@@ -1378,7 +1378,7 @@ function wifi_tools
 		fi
 	elif [[ "$APPP" = "16" ]]
 	then
-		if [[ -d "/usr/share/KatanaFramework" ]]
+		if [[ -d /root/KatanaFramework ]]
 		then
 			ktf.console
 		else
@@ -1930,7 +1930,7 @@ function wififb_pass
 			if [[ ! "$USERNAME" == "" ]]
 			then
 				z=$((z+1))
-				PASS=$(cat $wififbfile | awk  -v nn="$n" '{if(NR==nn && /word=/)print}' | awk -F "word=" '{print $2}' | cut -d '' -f1)
+				PASS=$(cat $wififbfile | awk  -v nn="$n" '{if(NR==nn && /word=/)print}' | awk -F "word=" '{print $2}' | cut -d '&' -f1)
 				if [[ "$PASS" == "" ]]
 				then
 					PASS="No password found"

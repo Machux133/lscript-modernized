@@ -196,7 +196,7 @@ function is_it_an_ip()
 	IIAI=${#IIA}
 	if [[ "$IIA" = "" ]]
 	then
-		echo -e """$RS""Error 9. No parameteres passed"
+		echo -e """$RS""Error 9. No parameteres passed""$CE"""
 		sleep 2
 	else
 		if [[ "$IIAI" -le 15 && "$IIAI" -ge 7 ]]
@@ -641,7 +641,7 @@ do
 	export ZERO
 	echo -e """$BS""Scanning, please wait...""$CE"""
 	tempfile="/root/lscript/tempscan.txt"
-	xterm -geometry 1x1+9999+999999 -e "arp-scan -I ""$IPF"" ""$ZERO""/24 | tee $tempfile"
+	xterm -geometry 1x1+9999+999999 -e bash -c "arp-scan -I ""$IPF"" ""$ZERO""/24 | tee $tempfile"
 	#gnome-terminal -- arp-scan -I "$IPF" "$ZERO"/24 | tee $tempfile
 	clear
 	######

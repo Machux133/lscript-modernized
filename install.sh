@@ -148,6 +148,22 @@ else
 	echo -e "/root/wordlists directory detected. Good."
 fi
 
+# Make sure lscript is on PATH regardless of whether the user is
+# "updating" or "installing" below - an existing install missing its
+# PATH entry (e.g. someone answered "u" on what was actually their
+# first install) should still get fixed, not silently left broken.
+if grep -qF "/bin/lscript" ~/.bashrc 2>/dev/null
+then
+	echo -e "lscript is already on your PATH (~/.bashrc). Skipping, so it doesn't get added twice."
+	sleep 2
+else
+	echo -e "Adding lscript to PATH so you can access it from anywhere"
+	sleep 1
+	echo 'export PATH=/bin/lscript:$PATH' >> ~/.bashrc
+	sleep 1
+fi
+export PATH=/bin/lscript:$PATH
+
 while true
 do
 	clear
@@ -162,18 +178,6 @@ do
 		break
 	elif [[ "$UORI" = "i" ]]
 	then
-		clear
-		if grep -qF "/bin/lscript" ~/.bashrc 2>/dev/null
-		then
-			echo -e "lscript is already on your PATH (~/.bashrc). Skipping, so it doesn't get added twice."
-			sleep 3
-		else
-			echo -e "Adding lscript to PATH so you can access it from anywhere"
-			sleep 1
-			echo 'export PATH=/bin/lscript:$PATH' >> ~/.bashrc
-			sleep 1
-		fi
-		export PATH=/bin/lscript:$PATH
 		clear
 		break
 	fi

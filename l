@@ -14,6 +14,11 @@ BACKL="0"
 DONATIONS=13
 # shellcheck disable=SC2034
 LATESTCHANGELOGLINES=26
+if [[ "$EUID" -ne 0 ]]
+then
+	echo -e "lscript needs to be run as root (e.g. with sudo, or in a terminal where you're already root).\nAborting."
+	exit 1
+fi
 #############LIBRARIES###############
 # At runtime lscript is always installed to /root/lscript, so these are
 # hardcoded absolute paths (matching every other /root/lscript reference

