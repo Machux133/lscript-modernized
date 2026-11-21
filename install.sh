@@ -7,6 +7,7 @@ printf '\033]2;INSTALLER\a'
 #############################
 LSCRIPT_FILES=(
 	"l" "handshake-menu" "deauth-menu" "deauth-autocheck" "wps-menu" "wep-menu"
+	"lib/pkg-and-terminal.sh" "lib/tool-installers.sh"
 	"mitm-helpers/dns2proxy.sh" "mitm-helpers/arpspoof-poison-target.sh" "mitm-helpers/arpspoof-poison-gateway.sh" "uninstall.sh" "install.sh"
 )
 # subset that also gets copied to /bin/lscript so 'l' can find its helpers on PATH
