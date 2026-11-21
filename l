@@ -2372,7 +2372,13 @@ EOF
 	else
 		cd /root/patator || exit
 		export XTP
-		xterm -T "INSTRUCTIONS" -hold -e "echo -e "---------------------------------------" && echo -e 'start with: python patator.py $XPT' && echo -e "---------------------------------------" && python patator.py $XPT" & disown
+		#the whole thing has to be built as one string and handed to
+		#`bash -c`, not spliced straight into xterm's -e argument list,
+		#otherwise the quotes around each echo -e argument break out of
+		#the outer command early (word-splitting the rest onto separate
+		#xterm arguments instead of one shell command line)
+		PATATOR_INSTRUCTIONS="echo -e \"---------------------------------------\"; echo -e 'start with: python patator.py \$XPT'; echo -e \"---------------------------------------\"; python patator.py $XPT"
+		xterm -T "INSTRUCTIONS" -hold -e bash -c "$PATATOR_INSTRUCTIONS" & disown
 		xterm -T "PATATOR" -hold & disown
 	fi
 done
