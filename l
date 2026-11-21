@@ -265,12 +265,8 @@ function monitor_spaces
 }
 function check_wlans
 {
-	CC=$WLANN
 	WLANCHECKING=$(ip addr | grep "$WLANN" )
-	#~ WLANCHECKING=$(ifconfig | awk -v c1="$CC" '$0 ~ c1 {print}')
-	CC=$WLANNM
 	WLANMCHECKING=$(ip addr | grep "$WLANNM" )
-	#~ WLANMCHECKING=$(ifconfig | awk -v c1="$CC" '$0 ~ c1 {print}')
 }
 function banner
 {
@@ -580,8 +576,7 @@ else
 fi
 }
 function listshortcuts
-{	
-	EXTRA1=""
+{
 	if [[ "$nn" = "1" ]]
 	then
 		TITLE="Fluxion"
@@ -1830,7 +1825,6 @@ do
 	if [[ "$HASH" = "" || "$HASH" = "\e[1;31mNONE\e[0m" ]]
 	then
 		HASH="\e[1;31mNONE\e[0m"
-		OK=0
 	fi
 	if [[ "$CORV" = "" ]]
 	then
@@ -2769,7 +2763,7 @@ do
 		then
 			DDISUAC=""
 		else
-			DDISIAC="--nouac"
+			DDISUAC="--nouac"
 		fi
 		if [[ "$ICON" = "OFF" ]]
 		then
@@ -4576,7 +4570,7 @@ function remote_access
 			done
 				clear
 				cd /root/morphHTA || exit
-				python morph-hta.py --in "$FPATH" --out "$M5" --mode "$M1" --maxstrlen "$M2" --maxvarlen "$M3" --maxnumsplit "$M4"
+				python morph-hta.py --in "$FPATH" --out "$M5" --mode "$MMODE" --maxstrlen "$M1" --maxvarlen "$M2" --maxnumsplit "$M3"
 				cd || exit
 		else	
 			echo -e "$TNI"
@@ -7312,10 +7306,8 @@ do
 				if [[ "$SC" = "" ]]
 				then
 					echo -e """$RS""Nothing selected""$CE"""
-					ssc=0
 					sleep 2
-				else
-					ssc=1
+					continue
 				fi
 				break
 			elif [[ "$COCH" = "d" ]] 

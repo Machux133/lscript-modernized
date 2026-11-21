@@ -15,14 +15,7 @@ function defaults_lh1
 	then
 		mkdir "$KSPATH"
 	fi
-#ALFA SUPPORT SETTING
-	if [[ -f "$LPATH"/settings/AWUS036ACH.txt ]]
-	then
-		read ALFA < "$LPATH"/settings/AWUS036ACH.txt
-	else
-		ALFA="no"
-	fi
-#yellow start 
+#yellow start
 	YS="\e[1;33m"
 #blue start 
 	BS="\e[0;34m"
@@ -244,7 +237,6 @@ then
 			fi
 			n=$((n+1))
 		done 
-		zn[$n3]=$lowestn
 		zopen[$n3]=${aopen[$lowestn]}
 		zdata[$n3]=${adata[$lowestn]}
 		zessid[$n3]=${aessid[$lowestn]}
@@ -442,7 +434,6 @@ do
 		elif [[ "$CHANNELSL" = "back" || "$CHANNELSL" = "b" ]]
 		then
 			clear
-			CH="0"
 			break
 		else
 			FJC=0
@@ -788,9 +779,12 @@ while true
 do
 clear
 
-if [[ -f "/root/handshakes/*.csv" ]]
+if compgen -G "/root/handshakes/*.csv" > /dev/null
 then
 	rm /root/handshakes/*.csv
+fi
+if compgen -G "/root/handshakes/*.netxml" > /dev/null
+then
 	rm /root/handshakes/*.netxml
 fi
 TERMINALTITLE="HANDSHAKE"
@@ -810,12 +804,10 @@ echo -e """$YS"" 6""$CE"") Remove .csv and .netxml files"
 echo -e """$YS"" 0""$CE"") Exit"
 echo -e "Choose: "
 sleep 1
-CH=0
 read -e AA
 clear
 if [[ "$AA" = "1" ]]
 then
-	CH=1
 	scan_networks
 elif [[ "$AA" = "2" ]]
 then
@@ -824,10 +816,8 @@ elif [[ "$AA" = "3" ]]
 then
 	if [[ "$FJC" = "1" ]]
 	then
-		AAGAIN=1
 		aircrack_handshakejust
 	else
-		AAGAIN=2
 		aircrack_handshake
 	fi
 elif [[ "$AA" = "4" ]]
