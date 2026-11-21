@@ -9,7 +9,7 @@ function defaults_lh3
 	LPATH="/root/lscript"
 	export LPATH
 #path for keyboard shortcuts
-	KSPATH=""$LPATH"/ks"
+	KSPATH="${LPATH}/ks"
 	export KSPATH
 #making sure the kspath is set
 	if [[ ! -d "$KSPATH" ]]
@@ -65,13 +65,13 @@ function defaults_lh3
 		COL="$RS"
 	fi
 #setting frequent stings
-	YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=yes)"
-	YNNO="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=no)"
-	YNONLY="("$YS"y"$CE"/"$YS"n"$CE")"
-	PAKT="Press "$YS"any key$CE to"
-	PAKTC="Press "$YS"any key$CE to continue..."
-	PAKTGB="Press "$YS"any key$CE to go back..."
-	TNI=""$RS"Tool is not installed. To install it type '"$CE""$YS"install"$CE""$RS"'."$CE""
+	YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
+	YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
+	YNONLY="(${YS}y${CE}/${YS}n${CE})"
+	PAKT="Press ${YS}any key$CE to"
+	PAKTC="Press ${YS}any key$CE to continue..."
+	PAKTGB="Press ${YS}any key$CE to go back..."
+	TNI="${RS}Tool is not installed. To install it type '${CE}${YS}install${CE}${RS}'.${CE}"
 #code to read from keyboard without return
 	READAK="read -n 1"
 #default MAC when starting monitor
@@ -86,36 +86,36 @@ function enable2_wlan
 {
 	echo -e "Enabling $WLANN..."
 	rfkill unblock wifi &> /dev/null; rfkill unblock all &> /dev/null
-	ifconfig $WLANN up &>/dev/null && echo -e ""$YS"Done"$CE"" && O4=1  || echo -e ""$RS"Error. I can't find your wireless adapter"$CE""
+	ifconfig "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1  || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
 }
 function start2_menu
 {
 	echo -e "Enabling $WLANNM..."
 	enable2_wlan
 	echo -e "Killing services..."
-	airmon-ng check kill &> /dev/null && echo -e ""$YS"Done"$CE"" && O1=1
+	airmon-ng check kill &> /dev/null && echo -e """$YS""Done""$CE""" && O1=1
 	echo -e "Starting monitor mode..."
 	if [[ "$ALFA" = "yes" ]]
 	then
-		ifconfig $WLANN down
-		iwconfig $WLANN mode monitor &> /dev/null && echo -e ""$YS"Done"$CE"" && O2=1
-		ifconfig $WLANN up
+		ifconfig "$WLANN" down
+		iwconfig "$WLANN" mode monitor &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
+		ifconfig "$WLANN" up
 	else
-		airmon-ng start $WLANN | grep "monitor mode" | awk -F "(" {'print $2'} | cut -d ')' -f1 &> /dev/null && echo -e ""$YS"Done"$CE"" && O2=1
+		airmon-ng start "$WLANN" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
 	fi
 	echo -e "Changing mac address of $WLANNM to 00:11:22:33:44:55..."
-	ifconfig $WLANNM down
-	macchanger -m 00:11:22:33:44:55 $WLANNM | grep "New MAC:" &> /dev/null && O3=1
-	ifconfig $WLANNM up && echo -e ""$YS"Done"$CE"" 
+	ifconfig "$WLANNM" down
+	macchanger -m 00:11:22:33:44:55 "$WLANNM" | grep "New MAC:" &> /dev/null && O3=1
+	ifconfig "$WLANNM" up && echo -e """$YS""Done""$CE""" 
 }
 function stop2_menu
 {
 	stop2_monitor
 	echo -e "Changing mac address of $WLANN to the original one..."
-	ifconfig $WLANN down
-	macchanger -p $WLANN | grep "Current MAC:" && O1=1
-	ifconfig $WLANN up
-	echo -e ""$YS"Done"$CE""
+	ifconfig "$WLANN" down
+	macchanger -p "$WLANN" | grep "Current MAC:" && O1=1
+	ifconfig "$WLANN" up
+	echo -e """$YS""Done""$CE"""
 }
 function stop2_monitor
 {
@@ -126,20 +126,20 @@ function stop2_monitor
 		A1=0
 		A2=0
 		A3=0
-		ifconfig $WLANN down && A1=1
-		iwconfig $WLANN mode managed && A2=1
-		ifconfig $WLANN up && A3=1
+		ifconfig "$WLANN" down && A1=1
+		iwconfig "$WLANN" mode managed && A2=1
+		ifconfig "$WLANN" up && A3=1
 		if [[ "$A1" = 1 && "$A2" = 1 && "$A3" = 1 ]]
 		then
-			echo -e ""$YS"Done"$CE"" && O2=1
+			echo -e """$YS""Done""$CE""" && O2=1
 		else
-			echo -e ""$RS"Error stoping monitor mode."$CE""
+			echo -e """$RS""Error stoping monitor mode.""$CE"""
 		fi
 	else
-		airmon-ng stop $WLANNM &>/dev/null && echo -e ""$YS"Done"$CE"" && O2=1 || echo -e ""$RS"Error stoping monitor mode."$CE""
+		airmon-ng stop "$WLANNM" &>/dev/null && echo -e """$YS""Done""$CE""" && O2=1 || echo -e """$RS""Error stoping monitor mode.""$CE"""
 	fi
 	echo -e "Starting network-manager service..."
-	service network-manager start && echo -e ""$YS"Done"$CE"" && O3=1 || echo -e ""$RS"Error starting network-manager service"$CE""
+	service network-manager start && echo -e """$YS""Done""$CE""" && O3=1 || echo -e """$RS""Error starting network-manager service""$CE"""
 }
 function install_bully
 {
@@ -152,12 +152,12 @@ function install_bully
 	fi				
 	echo -e "Installing Bully"
 	echo -e "Tool by Aanarchyy"
-	cd
+	cd || exit
 	git clone https://github.com/aanarchyy/bully.git
-	cd /root/bully/src
+	cd /root/bully/src || exit
 	make
 	sudo make install	
-	cd	
+	cd || exit	
 }
 function install_wifiautopwner
 {
@@ -170,7 +170,7 @@ function install_wifiautopwner
 	fi		
 	echo -e "Installing WiFi-autopwner"
 	echo -e "Tool by Mi-Al"
-	cd
+	cd || exit
 	git clone https://github.com/Mi-Al/WiFi-autopwner.git
 }
 function install_vmr
@@ -190,16 +190,16 @@ function install_vmr
 			rm -r /root/VMR
 		fi
 	fi
-	cd
+	cd || exit
 	wget https://github.com/musket33/VMR-MDK-Kali2-Kali2016/raw/master/VMR-MDK-K2-2017R-012x2.zip
 	unzip /root/VMR-MDK-K2-2017R-012x2.zip -d /root/VMR
 	cp -r /root/VMR/mdk3-v6 /root/
-	cd /root/mdk3-v6
+	cd /root/mdk3-v6 || exit
 	make
 	make install
 	chmod 755 /root/mdk3-v6/*
 	chmod +x /root/VMR/*.sh
-	cd
+	cd || exit
 }
 function install_airgeddon
 {
@@ -214,9 +214,9 @@ function install_airgeddon
 	sleep 1
 	echo -e "Installing Airgeddon"
 	echo -e "Tool by v1s1t0r1sh3r3"
-	cd
+	cd || exit
 	git clone https://github.com/v1s1t0r1sh3r3/airgeddon.git
-	cd airgeddon
+	cd airgeddon || exit
 	chmod +x airgeddon.sh
 }
 function dash_calc
@@ -229,10 +229,10 @@ function dash_calc
 	DASHESN="-"
 	while [ $numcalc != $calc ]
 	do
-		DASHESN=""$DASHESN"-"
+		DASHESN="${DASHESN}-"
 		numcalc=$(( numcalc+1 ))
 	done
-	echo -e "$DASHESN"$RS"$TERMINALTITLE"$CE"$DASHESN"
+	echo -e "$DASHESN""$RS""$TERMINALTITLE""$CE""$DASHESN"
 }
 function scan_wash
 {
@@ -242,7 +242,7 @@ function scan_wash
 	then
 		clear
 		echo -e "Scaning in new terminal..."
-		echo -e ""$YS"PRESS CTRL C IN WASH WHEN READY."$CE""
+		echo -e """$YS""PRESS CTRL C IN WASH WHEN READY.""$CE"""
 		sleep 1
 		xterm -geometry 80x25+9999+9999 -T "Press Ctrl C when ready" -e "wash  -i $WLANNM | tee /root/lscript/tempwash "
 	fi
@@ -251,10 +251,10 @@ function scan_wash
 		wash_awk
 		if [[ "$lines" = 0 ]]
 		then
-			echo -e ""$RS"No networks with WPS found nearby"$CE""
+			echo -e """$RS""No networks with WPS found nearby""$CE"""
 		fi
-		echo -e ""$YS" r"$CE") Rescan"
-		echo -e ""$YS" b"$CE") Go back"
+		echo -e """$YS"" r""$CE"") Rescan"
+		echo -e """$YS"" b""$CE"") Go back"
 		echo -e "Choose: "
 		read WASHSCAN
 		if [[ "$WASHSCAN" = "r" ]]
@@ -268,7 +268,7 @@ function scan_wash
 		then
 			if [[ "$WASHSCAN" -gt "$lines" ]]
 			then
-				echo -e ""$RS"Wrone choice..."$CE""
+				echo -e """$RS""Wrone choice...""$CE"""
 				SCW=0
 				sleep 2
 				continue
@@ -283,10 +283,10 @@ function scan_wash
 			if [[ ! "${alock[WASHSCAN2]}" = "No" ]]
 			then
 				clear
-				echo -e ""$RS"This AP is locked"$CE""
+				echo -e """$RS""This AP is locked""$CE"""
 				sleep 1
 				SCW=0
-				echo -e "Do you want to try to unlock it?"$YNYES""
+				echo -e "Do you want to try to unlock it?""$YNYES"""
 				read UNW
 				if [[ ! "$UNW" = "n" ]]
 				then
@@ -297,13 +297,13 @@ function scan_wash
 			while true
 			do
 				clear
-				echo -e ""$RS"----------You need strong connection------------"$CE""
-				echo -e ""$YS" 1"$CE") Pixie dust                         fast"
-				echo -e ""$YS" 2"$CE") Pixie loop till pin found          fast"
-				echo -e ""$YS" 3"$CE") Bruteforse                         slow"
-				echo -e ""$YS" 4"$CE") Bully"
-				echo -e ""$YS" r"$CE") Rescan"
-				echo -e ""$YS" b"$CE") Go back"
+				echo -e """$RS""----------You need strong connection------------""$CE"""
+				echo -e """$YS"" 1""$CE"") Pixie dust                         fast"
+				echo -e """$YS"" 2""$CE"") Pixie loop till pin found          fast"
+				echo -e """$YS"" 3""$CE"") Bruteforse                         slow"
+				echo -e """$YS"" 4""$CE"") Bully"
+				echo -e """$YS"" r""$CE"") Rescan"
+				echo -e """$YS"" b""$CE"") Go back"
 				echo -e "Choose: "
 				read WPSL
 				if [[ "$WPSL" = "r" ]]
@@ -350,21 +350,21 @@ do
 	TERMINALTITLE="WPS UNLOCK"
 	dash_calc
 	printf '\033]2;WPS UNLOCK\a'
-	echo -e ""$BS"2 or 3 network interfaces are recommended for this attack"$CE""
+	echo -e """$BS""2 or 3 network interfaces are recommended for this attack""$CE"""
 	echo -e ""
 	if [[ "$INTS" = "" ]]
 	then
 		INTS=1
 	fi
-	echo -e ""$YS"set"$CE") Set your interface(s)                   Current:"$INTS""
-	echo -e ""$YS" ch"$CE") Check if unlocked"
+	echo -e """$YS""set""$CE"") Set your interface(s)                   Current:""$INTS"""
+	echo -e """$YS"" ch""$CE"") Check if unlocked"
 	#~ echo -e ""$YS"  t"$CE") Set attack's timeout                    Current:"$TM" secs"
-	echo -e ""$BS"Attacks:"$CE""
-	echo -e ""$YS" 1"$CE") DOS flood"
-	echo -e ""$YS" 2"$CE") EAPOL start flood"
+	echo -e """$BS""Attacks:""$CE"""
+	echo -e """$YS"" 1""$CE"") DOS flood"
+	echo -e """$YS"" 2""$CE"") EAPOL start flood"
 	#~ echo -e ""$YS" 3"$CE") Cause Michael failure (only TKIP / AES+TKIP)"
 	#~ echo -e ""$YS" 4"$CE") "
-	echo -e ""$YS" b"$CE") Go back"
+	echo -e """$YS"" b""$CE"") Go back"
 	echo -e "Choose:"
 	read UNL
 	clear
@@ -398,7 +398,7 @@ do
 					CURIN="${NI[$n]}"
 					if [[ "$CURIN" = "" ]]
 					then
-						echo -e ""$RS"Error 15. Interface not found."$CE""
+						echo -e """$RS""Error 15. Interface not found.""$CE"""
 						sleep 3
 					else
 						xterm -T "DOS flood on $CURIN" -hold -e 'mdk3 $CURIN a -a $BSSIDT -m && echo -e "" && echo -e "Close this window manually"' & disown
@@ -411,7 +411,7 @@ do
 		done
 	elif [[ "$UNL" = "2" ]]
 	then
-		echo -e "Packets to inject per second:("$YS"Enter"$CE"="$DPPS")"
+		echo -e "Packets to inject per second:(${YS}Enter${CE}=${DPPS})"
 		read PPS
 		if [[ "$PPS" = "" ]]
 		then
@@ -419,7 +419,7 @@ do
 		fi
 		if [[ "$PPS" -le 0 ]]
 		then
-			echo -e ""$RS"Wrong choice"$CE""
+			echo -e """$RS""Wrong choice""$CE"""
 			sleep 2
 			continue
 		fi
@@ -442,7 +442,7 @@ do
 					export CURIN
 					if [[ "$CURIN" = "" ]]
 					then
-						echo -e ""$RS"Error 16. Interface not found."$CE""
+						echo -e """$RS""Error 16. Interface not found.""$CE"""
 						sleep 3
 					else
 						xterm -T "EAPOL start flood on $CURIN" -geometry 80x11+0+"$OFSET" -hold -e 'mdk3 $CURIN x 0 -t $BSSIDT -n "$ESSIDT" -s $PPS && echo -e "" && echo -e "Close this window manually"' & disown
@@ -458,10 +458,10 @@ do
 		while true
 		do
 			clear
-			echo -e ""$BS"Current interface number"$CE": "$INTS""
-			echo -e ""$YS" a"$CE") Add another interface"
-			echo -e ""$YS" r"$CE") Reset interfaces"
-			echo -e ""$YS" b"$CE") Go back"
+			echo -e """$BS""Current interface number""$CE"": ""$INTS"""
+			echo -e """$YS"" a""$CE"") Add another interface"
+			echo -e """$YS"" r""$CE"") Reset interfaces"
+			echo -e """$YS"" b""$CE"") Go back"
 			read NIN
 			clear
 			if [[ "$NIN" = "b" || "$NIN" = 00 ]]
@@ -474,7 +474,7 @@ do
 					newints=$((INTS-1))
 					if [[ "$newints" -lt 1 ]]
 					then
-						echo -e ""$RS"No interfaces added to reset"$CE""
+						echo -e """$RS""No interfaces added to reset""$CE"""
 						sleep 2
 						break
 					else
@@ -489,21 +489,21 @@ do
 				TEST3=$(ifconfig | grep "$NII")
 				if [[ "$TEST3" = "" ]]
 				then
-					echo -e ""$RS"Could not find this interface on your system"$CE""
+					echo -e """$RS""Could not find this interface on your system""$CE"""
 					sleep 3
 				else
-					echo -e ""$BS"Interface found!"$CE""
+					echo -e """$BS""Interface found!""$CE"""
 					sleep 2
 					clear
 					checkmonitor=$(iwconfig "$NII" | grep "Mode:Monitor")
 					if [[ "$checkmonitor" = "" ]]
 					then
-						echo -e ""$BS"Enabling monitor mode for "$NII"..."
-						airmon-ng start $NII | grep "monitor mode" | awk -F "(" {'print $2'} | cut -d ')' -f1 &> /dev/null && echo -e ""$YS"Done"$CE""
+						echo -e """$BS""Enabling monitor mode for ""$NII""..."
+						airmon-ng start "$NII" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE"""
 						checkmonitor=$(iwconfig "$NII"mon | grep "Mode:Monitor")
 						if [[ "$checkmonitor" = "" ]]
 						then
-							echo -e ""$RS"Couldn't start monitor mode"$CE""
+							echo -e """$RS""Couldn't start monitor mode""$CE"""
 							sleep 2
 							continue
 						fi
@@ -514,7 +514,7 @@ do
 					do
 						if [[ "$NII" == "${NI[$z]}" || "$NII" == "$WLANNM" ]]
 						then
-							echo -e ""$RS"Interface already set"$CE""
+							echo -e """$RS""Interface already set""$CE"""
 							sleep 2
 							l=1
 						fi
@@ -538,15 +538,15 @@ function reaver_attack
 	TERMINALTITLE="WPS BRUTEFORCE"
 	dash_calc
 	printf '\033]2;WPS BRUTEFORCE\a'
-	echo -e "Delay between every attempt("$YS"Enter"$CE"=60): "
+	echo -e "Delay between every attempt(""$YS""Enter""$CE""=60): "
 	read DELAY
 	if [[ "$DELAY" = "" ]]
 	then
 		DELAY=60
 	fi
 	#xterm -geometry 90x70+0+0 -e "sleep 5 && aireplay-ng $WLANNM -1 120 -a $BSSIDT" & disown
-	reaver -i $WLANNM -b $BSSIDT -c $CHANT -d $DELAY -L -f -N -vvv | tee /root/lscript/wpslog
-	echo -e "Press "$YS"enter"$CE" to go back"
+	reaver -i "$WLANNM" -b "$BSSIDT" -c "$CHANT" -d "$DELAY" -L -f -N -vvv | tee /root/lscript/wpslog
+	echo -e "Press ""$YS""enter""$CE"" to go back"
 	read	
 }
 function pixie_loop
@@ -555,7 +555,7 @@ function pixie_loop
 	TERMINALTITLE="PIXIE LOOP ATTACK"
 	dash_calc
 	printf '\033]2;PIXIE LOOP ATTACK\a'
-	echo -e "Delay between every attempt("$YS"Enter"$CE"=15): "
+	echo -e "Delay between every attempt(""$YS""Enter""$CE""=15): "
 	read DELAY
 	if [[ "$DELAY" = "" ]]
 	then
@@ -568,7 +568,7 @@ function pixie_loop
 	do
 		trap 'break' SIGINT
 		echo "" > "$LPATH"/wpslogloop
-		reaver -i $WLANNM -b $BSSIDT -c $CHANT -N -K 1 -f -vvv <<< $'y\n' | tee /root/lscript/wpslogloop
+		reaver -i "$WLANNM" -b "$BSSIDT" -c "$CHANT" -N -K 1 -f -vvv <<< $'y\n' | tee /root/lscript/wpslogloop
 		if [[ -f "$LPATH"/wpslog ]]
 		then
 			TTT=$(cat "$LPATH"/wpslogloop | grep "WPS pin not found!")
@@ -577,32 +577,32 @@ function pixie_loop
 			TTT3=$(cat "$LPATH"/wpslogloop | grep "WPA")
 			if [[ "$TTT" != "" || "$TTTT" != "" ]]
 			then
-				echo -e ""$RS"Pin not found. Retrying..."$CE""
+				echo -e """$RS""Pin not found. Retrying...""$CE"""
 			elif [[ "$TTT2" != "" || "$TT3" != "" ]]
 			then
-				echo -e ""$YS"Pin found!!"$CE""
-				cp "$LPATH"/wpslog >> "$LPATH"/wpslog
+				echo -e """$YS""Pin found!!""$CE"""
+				cat "$LPATH"/wpslogloop >> "$LPATH"/wpslog
 				sleep 2
 				break
 			else
-				echo -e ""$RS"Pin not found. Retrying..."$CE""
+				echo -e """$RS""Pin not found. Retrying...""$CE"""
 			fi
 			if [[ "$DELAY" -gt 1 ]]
 			then
-				echo -e "Waiting "$DELAY" seconds..."
+				echo -e "Waiting ""$DELAY"" seconds..."
 			elif [[ "$DELAY" = 1 ]]
 			then
-				echo -e "Waiting "$DELAY" second..."
+				echo -e "Waiting ""$DELAY"" second..."
 			fi
-			sleep $DELAY
+			sleep "$DELAY"
 		else
-			echo -e ""$RS"Error 10. Could not locate wpslogloop file."$CE""
+			echo -e """$RS""Error 10. Could not locate wpslogloop file.""$CE"""
 			sleep 4
 			break
 		fi
 	done
 	trap - SIGINT
-	echo -e "Press "$YS"enter"$CE" to go back"
+	echo -e "Press ""$YS""enter""$CE"" to go back"
 	read
 	
 }
@@ -613,13 +613,13 @@ function pixie_attack
 	dash_calc
 	printf '\033]2;PIXIE DUST ATTACK\a'
 	#xterm -geometry 90x70+0+0 -e "aireplay-ng $WLANNM -1 10 -a $BSSIDT" & disown
-	reaver -i $WLANNM -b $BSSIDT -c $CHANT -N -f --pixie-dust -vvv | tee /root/lscript/wpslog
-	echo -e "Press "$YS"enter"$CE" to go back"
+	reaver -i "$WLANNM" -b "$BSSIDT" -c "$CHANT" -N -f --pixie-dust -vvv | tee /root/lscript/wpslog
+	echo -e "Press ""$YS""enter""$CE"" to go back"
 	read
 }
 function reaver_wpastart
 {
-	reaver -i $WLANNM -b $BSSIDT -c $CHANT -N -p $WPST -L -f -g 1 -d 2 -vvv
+	reaver -i "$WLANNM" -b "$BSSIDT" -c "$CHANT" -N -p "$WPST" -L -f -g 1 -d 2 -vvv
 	echo -e "$PAKTC"
 	read
 }
@@ -788,16 +788,16 @@ do
 	then
 		if [[ ${achannel[${SORTED[$n]}]} -lt 10 ]]
 		then
-			echo -e " "$locked""$n""$CE") "$locked"${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]}  ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}"$CE""
+			echo -e " ${locked}${n}${CE}) ${locked}${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]}  ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}${CE}"
 		else
-			echo -e " "$locked""$n""$CE") "$locked"${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]} ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}"$CE""
+			echo -e " ${locked}${n}${CE}) ${locked}${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]} ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}${CE}"
 		fi
 	else
 		if [[ ${achannel[${SORTED[$n]}]} -lt 10 ]]
 		then
-			echo -e ""$locked""$n""$CE") "$locked"${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]}  ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}"$CE""
+			echo -e "${locked}${n}${CE}) ${locked}${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]}  ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}${CE}"
 		else
-			echo -e ""$locked""$n""$CE") "$locked"${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]} ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}"$CE""
+			echo -e "${locked}${n}${CE}) ${locked}${abssid[${SORTED[$n]}]} ${achannel[${SORTED[$n]}]} ${SORTEDPR[$n]} ${aessid[${SORTED[$n]}]}${CE}"
 		fi
 	fi
 	n=$((n+1))
@@ -849,19 +849,19 @@ do
 	else
 		OK=1
 	fi
-	echo -e ""$YS" 1"$CE") Essid                       CURRENT:"$ESSIDT""
-	echo -e ""$YS" 2"$CE") Bssid                       CURRENT:"$BSSIDT""
-	echo -e ""$YS" 3"$CE") Channel                     CURRENT:"$CHANT""
-	echo -e ""$YS" 4"$CE") Bruteforce Checksum digit   CURRENT:"$BRUTE""
-	echo -e ""$YS" 5"$CE") Pixie wps                   CURRENT:"$PIXIE""
-	echo -e ""$YS" 6"$CE") Wait after lock             CURRENT:"$LOCKWAIT" secs"
-	echo -e ""$YS" 7"$CE") Wait per attempt            CURRENT:"$WAITPERATTEMPT" secs"
-	echo -e ""$YS" 8"$CE") Force                       CURRENT:"$FORCE""
-	echo -e ""$YS" 9"$CE") Sequential                  CURRENT:"$SEQ""
-	echo -e ""$YS"10"$CE") Verbosity                   CURRENT:"$VERBOSITY""
-	echo -e ""$YS"11"$CE") Ignore lockout              CURRENT:"$IGNORELOCKOUT""
-	echo -e ""$YS" b"$CE") Go back"
-	echo -e ""$YS"start"$CE") Start"
+	echo -e """$YS"" 1""$CE"") Essid                       CURRENT:""$ESSIDT"""
+	echo -e """$YS"" 2""$CE"") Bssid                       CURRENT:""$BSSIDT"""
+	echo -e """$YS"" 3""$CE"") Channel                     CURRENT:""$CHANT"""
+	echo -e """$YS"" 4""$CE"") Bruteforce Checksum digit   CURRENT:""$BRUTE"""
+	echo -e """$YS"" 5""$CE"") Pixie wps                   CURRENT:""$PIXIE"""
+	echo -e """$YS"" 6""$CE"") Wait after lock             CURRENT:""$LOCKWAIT"" secs"
+	echo -e """$YS"" 7""$CE"") Wait per attempt            CURRENT:""$WAITPERATTEMPT"" secs"
+	echo -e """$YS"" 8""$CE"") Force                       CURRENT:""$FORCE"""
+	echo -e """$YS"" 9""$CE"") Sequential                  CURRENT:""$SEQ"""
+	echo -e """$YS""10""$CE"") Verbosity                   CURRENT:""$VERBOSITY"""
+	echo -e """$YS""11""$CE"") Ignore lockout              CURRENT:""$IGNORELOCKOUT"""
+	echo -e """$YS"" b""$CE"") Go back"
+	echo -e """$YS""start""$CE"") Start"
 	echo -e "Choose: "
 	read B
 	clear
@@ -873,7 +873,7 @@ do
 	then
 		if [[ "$OK" = 0 ]]
 		then
-			echo -e ""$RS"Error 1"$CE""
+			echo -e """$RS""Error 1""$CE"""
 			sleep 3
 		else
 			if [[ "$BRUTE" = "ON" ]]
@@ -907,7 +907,7 @@ do
 			else
 				LIGNORELOCKOUT=""
 			fi
-			bully -b $BSSIDT -e $ESSIDT -c $CHANT -v $VERBOSITY -l $LOCKWAIT -1 $WAITPERATTEMPT,1 $LFORCE $LSEQ $LBRUTE $LPIXIE $LIGNORELOCKOUT $WLANNM
+			bully -b "$BSSIDT" -e "$ESSIDT" -c "$CHANT" -v "$VERBOSITY" -l "$LOCKWAIT" -1 "$WAITPERATTEMPT",1 $LFORCE $LSEQ $LBRUTE $LPIXIE $LIGNORELOCKOUT "$WLANNM"
 			echo -e "$PAKTGB"
 			$READAK
 		fi
@@ -1001,42 +1001,42 @@ dash_calc
 printf '\033]2;WPS MENU\a'
 if [[ "$ESSIDT" = "" ]]
 then
-	echo -e ""$YS" 1"$CE") Scan with wash              Selected: "$RS"None"$CE""
+	echo -e """$YS"" 1""$CE"") Scan with wash              Selected: ""$RS""None""$CE"""
 else
-	echo -e ""$YS" 1"$CE") Scan with wash              Selected: "$YS"$ESSIDT"$CE""
+	echo -e """$YS"" 1""$CE"") Scan with wash              Selected: ""$YS""$ESSIDT""$CE"""
 fi
-echo -e ""$YS" 2"$CE") Reaver bruteforce"
-echo -e ""$YS" 3"$CE") Reaver                      (if you already have the WPS pin)"
-echo -e ""$YS" 4"$CE") Pixie Dust"
-echo -e ""$YS" 5"$CE") Pixie loop till pin found"
+echo -e """$YS"" 2""$CE"") Reaver bruteforce"
+echo -e """$YS"" 3""$CE"") Reaver                      (if you already have the WPS pin)"
+echo -e """$YS"" 4""$CE"") Pixie Dust"
+echo -e """$YS"" 5""$CE"") Pixie loop till pin found"
 if [[ -f /usr/bin/bully ]]
 then
-	echo -e ""$YS" 6"$CE") Bully                       AUTOMATED SCRIPT"
-	echo -e ""$YS" 7"$CE") Bully"
+	echo -e """$YS"" 6""$CE"") Bully                       AUTOMATED SCRIPT"
+	echo -e """$YS"" 7""$CE"") Bully"
 else
-	echo -e ""$RS" 6"$CE") "$RS"Bully"$CE"                        AUTOMATED SCRIPT"
-	echo -e ""$RS" 7"$CE") "$RS"Bully"$CE""
+	echo -e """$RS"" 6""$CE"") ""$RS""Bully""$CE""                        AUTOMATED SCRIPT"
+	echo -e """$RS"" 7""$CE"") ""$RS""Bully""$CE"""
 fi
 if [[ -d /root/WiFi-autopwner ]]
 then
-	echo -e ""$YS" 8"$CE") WiFi autopwner"
+	echo -e """$YS"" 8""$CE"") WiFi autopwner"
 else
-	echo -e ""$RS" 8"$CE") "$RS"WiFi autopwner"$CE""
+	echo -e """$RS"" 8""$CE"") ""$RS""WiFi autopwner""$CE"""
 fi
 if [[ -d /root/airgeddon ]]
 then
-	echo -e ""$YS" 9"$CE") Airgeddon"
+	echo -e """$YS"" 9""$CE"") Airgeddon"
 else
-	echo -e ""$RS" 9"$CE") "$RS"Airgeddon"$CE""
+	echo -e """$RS"" 9""$CE"") ""$RS""Airgeddon""$CE"""
 fi
 if [[ -d /root/VMR ]]
 then
-	echo -e ""$YS"10"$CE") VMR"
+	echo -e """$YS""10""$CE"") VMR"
 else
-	echo -e ""$RS"10"$CE") "$RS"VMR"$CE""
+	echo -e """$RS""10""$CE"") ""$RS""VMR""$CE"""
 fi
-echo -e ""$YS"11"$CE") See latest log"
-echo -e ""$YS" 0"$CE") Exit"
+echo -e """$YS""11""$CE"") See latest log"
+echo -e """$YS"" 0""$CE"") Exit"
 echo -e "Choose: "
 read -e YN
 clear
@@ -1049,7 +1049,7 @@ then
 	then
 		reaver_attack
 	else
-		echo -e ""$RS"No network selected"$CE""
+		echo -e """$RS""No network selected""$CE"""
 		sleep 2
 	fi
 elif [[ "$YN" = "3" ]]
@@ -1059,11 +1059,11 @@ then
 		echo -e "Enter your target's WPS pin: "
 		read -e WPST
 		clear
-		reaver -i $WLANNM -b $BSSIDT -c $CHANT -p $WPST -vv | tee /root/lscript/wpslog
-		echo -e "Press "$YS"enter"$CE" to go back"
+		reaver -i "$WLANNM" -b "$BSSIDT" -c "$CHANT" -p "$WPST" -vv | tee /root/lscript/wpslog
+		echo -e "Press ""$YS""enter""$CE"" to go back"
 		read
 	else
-		echo -e ""$RS"No network selected"$CE""
+		echo -e """$RS""No network selected""$CE"""
 		sleep 2
 	fi
 
@@ -1073,7 +1073,7 @@ then
 	then
 		pixie_attack
 	else
-		echo -e ""$RS"No network selected"$CE""
+		echo -e """$RS""No network selected""$CE"""
 		sleep 2
 	fi
 elif [[ "$YN" = "5" ]]
@@ -1082,7 +1082,7 @@ then
 	then
 		pixie_loop
 	else
-		echo -e ""$RS"No network selected"$CE""
+		echo -e """$RS""No network selected""$CE"""
 		sleep 2
 	fi
 elif [[ "$YN" = "6" ]]
@@ -1093,16 +1093,16 @@ then
 		then
 			bully_script
 		else
-			echo -e ""$RS"No network selected"$CE""
+			echo -e """$RS""No network selected""$CE"""
 			sleep 2
 		fi
 	else
-		echo -e ""$RS"Bully isn't installed.Type '"$CE""$YS"install"$CE""$RS"' to stop monitor mode and install it."$CE""
+		echo -e """$RS""Bully isn't installed.Type '""$CE""""$YS""install""$CE""""$RS""' to stop monitor mode and install it.""$CE"""
 		read INSTALL
 		if [[ "$INSTALL" = "install" ]]
 		then
 			stop2_menu
-			echo -e "Press "$YS"enter"$CE" when connected to a network"
+			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
 			read ENT
 			install_bully
 			start2_menu
@@ -1112,16 +1112,16 @@ elif [[ "$YN" = "7" ]]
 then
 	if [[ -f /root/bully/src/bully.py ]]
 	then
-		cd /root/bully/src
+		cd /root/bully/src || exit
 		./bully.py
-		cd
+		cd || exit
 	else
-		echo -e ""$RS"Bully isn't installed.Type '"$CE""$YS"install"$CE""$RS"'to stop monitor mode and install it."$CE""
+		echo -e """$RS""Bully isn't installed.Type '""$CE""""$YS""install""$CE""""$RS""'to stop monitor mode and install it.""$CE"""
 		read INSTALL
 		if [[ "$INSTALL" = "install" ]]
 		then
 			stop2_menu
-			echo -e "Press "$YS"enter"$CE" when connected to a network"
+			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
 			read ENT
 			install_bully
 			start2_menu
@@ -1131,16 +1131,16 @@ elif [[ "$YN" = "8" ]]
 then
 	if [[ -f /root/WiFi-autopwner/wifi-autopwner.sh ]]
 	then
-		cd /root/WiFi-autopwner
+		cd /root/WiFi-autopwner || exit
 		./wifi-autopwner.sh
-		cd
+		cd || exit
 	else
-		echo -e ""$RS"Wifi autopwner isn't installed.Type '"$CE""$YS"install"$CE""$RS"' to stop monitor mode and install it."$CE""
+		echo -e """$RS""Wifi autopwner isn't installed.Type '""$CE""""$YS""install""$CE""""$RS""' to stop monitor mode and install it.""$CE"""
 		read INSTALL
 		if [[ "$INSTALL" = "install" ]]
 		then
 			stop2_menu
-			echo -e "Press "$YS"enter"$CE" when connected to a network"
+			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
 			read ENT
 			install_wifiautopwner
 			start2_menu
@@ -1150,16 +1150,16 @@ elif [[ "$YN" = "9" ]]
 then
 	if [[ -d "/root/airgeddon" ]]
 	then
-		cd /root/airgeddon
+		cd /root/airgeddon || exit
 		./airgeddon.sh
-		cd
+		cd || exit
 	else
-		echo -e ""$RS"Airgeddon isn't installed.Type '"$CE""$YS"install"$CE""$RS"' to stop monitor mode and install it."$CE""
+		echo -e """$RS""Airgeddon isn't installed.Type '""$CE""""$YS""install""$CE""""$RS""' to stop monitor mode and install it.""$CE"""
 		read INSTALL
 		if [[ "$INSTALL" = "install" ]]
 		then
 			stop2_menu
-			echo -e "Press "$YS"enter"$CE" when connected to a network"
+			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
 			read ENT
 			install_airgeddon
 			start2_menu
@@ -1169,15 +1169,15 @@ elif [[ "$YN" = "10" ]]
 then
 	if [[ -d "/root/VMR" ]]
 	then
-		cd /root/VMR
+		cd /root/VMR || exit
 		./VMR-MDK-K2-2017R-012x2.sh
 	else
-		echo -e ""$RS"VMR isn't installed.Type '"$CE""$YS"install"$CE""$RS"' to stop monitor mode and install it."$CE""
+		echo -e """$RS""VMR isn't installed.Type '""$CE""""$YS""install""$CE""""$RS""' to stop monitor mode and install it.""$CE"""
 		read INSTALL
 		if [[ "$INSTALL" = "install" ]]
 		then
 			stop2_menu
-			echo -e "Press "$YS"enter"$CE" when connected to a network"
+			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
 			read ENT
 			install_vmr
 			start2_menu
@@ -1186,7 +1186,7 @@ then
 elif [[ "$YN" = "11" ]]
 then
 	cat /root/lscript/wpslog
-	echo -e "Press "$YS"enter"$CE" to go back"
+	echo -e "Press ""$YS""enter""$CE"" to go back"
 	read
 elif [[ "$YN" = "0" ]]
 then

@@ -2,6 +2,8 @@
 DPIDDD=$$
 echo $DPIDDD > /root/lscript/dpiddd.txt
 i=1
+# Del is exported by lh2 right before it launches this script in a new terminal.
+# shellcheck disable=SC2154
 delay="$Del"
 if [[ "$delay" == "" ]]
 then
@@ -27,7 +29,7 @@ do
 			PIF=$(ps -A | grep "$DPID")
 			if [[ "$PIF" != "" ]]
 			then
-				kill $DPID
+				kill "$DPID"
 			fi
 		fi
 		break
@@ -37,14 +39,14 @@ done
 j=1
 while true
 do
-	PIDSE="dpid"$j".txt"
+	PIDSE="dpid${j}.txt"
 	if [[ -f "$LPATH"/"$PIDSE" ]]
 	then
 		read DPID < "$LPATH"/"$PIDSE"
 		PIF=$(ps -A | grep "$DPID")
 		if [[ "$PIF" != "" ]]
 		then
-			kill $DPID
+			kill "$DPID"
 		fi
 	else
 		rm "$LPATH"/dpid*
@@ -55,7 +57,7 @@ done
 if [[ -f "$LPATH"/dpidd.txt ]]
 then
 	read DPID2 < /root/lscript/dpidd.txt
-	kill -INT $DPID2
+	kill -INT "$DPID2"
 fi
 exit
 

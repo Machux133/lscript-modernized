@@ -19,9 +19,8 @@ function find_pid
 j=1
 while true
 do
-	CURPID="dpid"$j".txt"
-	FINDPID=$(ls "$LPATH" | grep "$CURPID")
-	if [[ "$FINDPID" == "" ]]
+	CURPID="dpid${j}.txt"
+	if [[ ! -f "$LPATH/$CURPID" ]]
 	then
 		AVPID="$CURPID"
 		break
@@ -69,13 +68,13 @@ function defaults_lh2
 #white start
 	WHS="\e[1;37m"
 #setting frequent stings
-	YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=yes)"
-	YNNO="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=no)"
-	YNONLY="("$YS"y"$CE"/"$YS"n"$CE")"
-	PAKT="Press "$YS"any key$CE to"
-	PAKTC="Press "$YS"any key$CE to continue..."
-	PAKTGB="Press "$YS"any key$CE to go back..."
-	TNI=""$RS"Tool is not installed. To install it type '"$CE""$YS"install"$CE""$RS"'."$CE""
+	YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
+	YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
+	YNONLY="(${YS}y${CE}/${YS}n${CE})"
+	PAKT="Press ${YS}any key$CE to"
+	PAKTC="Press ${YS}any key$CE to continue..."
+	PAKTGB="Press ${YS}any key$CE to go back..."
+	TNI="${RS}Tool is not installed. To install it type '${CE}${YS}install${CE}${RS}'.${CE}"
 #code to read from keyboard without return
 	READAK="read -n 1"
 }
@@ -86,15 +85,15 @@ do
 	#~ echo -e "Searching for clients"
 	if [[ ! -f "$HANDFORDEAUTH" ]]
 	then
-		echo -e ""$RS"Error 2"$CE""
+		echo -e """$RS""Error 2""$CE"""
 		sleep 2
 		break
 	fi
-	lines=$(cat $HANDFORDEAUTH | awk 'END{print NR}')
+	lines=$(cat "$HANDFORDEAUTH" | awk 'END{print NR}')
 	dlines=$((lines-6))
 	if [[ "$dlines" -le 0 ]]
 	then
-		echo -e ""$RS"No clients found (yet)."$CE""
+		echo -e """$RS""No clients found (yet).""$CE"""
 		sleep 2
 		break
 	fi
@@ -105,19 +104,19 @@ do
 	while [[ "$n" -le "$dlines" ]]
 	do
 		n1=$((5+n))
-		station[$n]=$(cat $HANDFORDEAUTH | awk -v nn="$n1" '{FS=","}{if(NR==nn)print $1}')
+		station[$n]=$(cat "$HANDFORDEAUTH" | awk -v nn="$n1" '{FS=","}{if(NR==nn)print $1}')
 		if [[ "$n" -ge 10 ]]
 		then
-			echo -e ""$YS""$n""$CE") "${station[$n]}""
+			echo -e "${YS}${n}${CE}) ${station[$n]}"
 		else
-			echo -e ""$YS" "$n""$CE") "${station[$n]}""
+			echo -e "${YS} ${n}${CE}) ${station[$n]}"
 		fi
 		n=$((n+1))
 	done
-	echo -e ""$YS" a"$CE") Deauth all clients separately"
-	echo -e ""$YS" m"$CE") Manually type a MAC to deauth"
-	echo -e ""$YS" r"$CE") Refresh"
-	echo -e ""$YS" b"$CE") Go back"
+	echo -e """$YS"" a""$CE"") Deauth all clients separately"
+	echo -e """$YS"" m""$CE"") Manually type a MAC to deauth"
+	echo -e """$YS"" r""$CE"") Refresh"
+	echo -e """$YS"" b""$CE"") Go back"
 	echo -e "Choose: "
 	read STATION
 	clear
@@ -125,7 +124,7 @@ do
 	then
 		echo -e "MAC to deauth: "
 		read MACTD
-		echo -e "Number of deauths to send("$YS"0"$CE"=inf)("$YS"Enter"$CE"=0): "
+		echo -e "Number of deauths to send(""$YS""0""$CE""=inf)(""$YS""Enter""$CE""=0): "
 		read DEAUTHS
 		if [[ "$DEAUTHS" = "" ]]
 		then
@@ -143,7 +142,7 @@ do
 	fi
 	if [[ "$STATION" = "a" ]]
 	then
-		echo -e "Number of deauths to send("$YS"0"$CE"=inf)("$YS"Enter"$CE"=0): "
+		echo -e "Number of deauths to send(""$YS""0""$CE""=inf)(""$YS""Enter""$CE""=0): "
 		read DEAUTHS
 		if [[ "$DEAUTHS" = "" ]]
 		then
@@ -166,7 +165,7 @@ do
 	fi
 	if [[ "$STATION" -le "$dlines" && "$STATION" -ge 1 ]]
 	then
-		echo -e "Number of deauths to send("$YS"0"$CE"=inf)("$YS"Enter"$CE"=0): "
+		echo -e "Number of deauths to send(""$YS""0""$CE""=inf)(""$YS""Enter""$CE""=0): "
 		read DEAUTHS
 		if [[ "$DEAUTHS" = "" ]]
 		then
@@ -199,23 +198,23 @@ function pyrit_hand_check
 			then	
 				#TEMPHANDDD=$(pyrit -r "$HANDCAP" analyze 2>/dev/null | grep "bad")
 				TEMPHANDDD=$(echo "$TEMP" | grep "bad")
-				if [[ "TEMPHANDDD" = "" ]]
+				if [[ "$TEMPHANDDD" = "" ]]
 				then
-					echo -e "Handshake found!(Status: "$RS"unknown"$CE")"
+					echo -e "Handshake found!(Status: ""$RS""unknown""$CE"")"
 				else
-					echo -e "Handshake found!(Status: "$RS"bad"$CE")"
+					echo -e "Handshake found!(Status: ""$RS""bad""$CE"")"
 				fi
 				sleep 2
 			else
-				echo -e "Handshake found!(Status: "$RS"workable"$CE")"
+				echo -e "Handshake found!(Status: ""$RS""workable""$CE"")"
 			fi			
 		else
-			echo -e "Valid handshake found!(Status: "$YS"good"$CE")"
+			echo -e "Valid handshake found!(Status: ""$YS""good""$CE"")"
 			sleep 2
 		fi
 	else
 		VALIDH=0
-		echo -e ""$RS"No handshake found."$CE""
+		echo -e """$RS""No handshake found.""$CE"""
 		sleep 2
 	fi
 }
@@ -229,18 +228,18 @@ function cowpatty_hand_check
 	if [[ "$TEMPHAND" = "" ]]
 	then
 		VALIDH=0
-		echo -e ""$RS"No handshake found"$CE""
+		echo -e """$RS""No handshake found""$CE"""
 		sleep 1
 	else
 		VALIDH=1
-		echo -e ""$YS"Valid handshake found!"$CE""
+		echo -e """$YS""Valid handshake found!""$CE"""
 		sleep 2
 	fi
 }
 defaults_lh2
 if [[ -f "$LPATH"/settings/ignorenegativeone.txt ]]
 then
-	read IGN < ""$LPATH"/settings/ignorenegativeone.txt"
+	read IGN < "${LPATH}/settings/ignorenegativeone.txt"
 else
 	IGN="no"
 fi
@@ -254,10 +253,10 @@ fi
 while true
 do
 	clear
-	echo -e ""$YS" 1"$CE") Deauth all                      aireplay-ng"
-	echo -e ""$YS" 2"$CE") Deauth all                      mdk3"
-	echo -e ""$YS" 3"$CE") Deauth client/s                 aireplay-ng"
-	echo -e ""$YS" 4"$CE") Deauth all periodically         aireplay-ng"
+	echo -e """$YS"" 1""$CE"") Deauth all                      aireplay-ng"
+	echo -e """$YS"" 2""$CE"") Deauth all                      mdk3"
+	echo -e """$YS"" 3""$CE"") Deauth client/s                 aireplay-ng"
+	echo -e """$YS"" 4""$CE"") Deauth all periodically         aireplay-ng"
 	if [[ "$HANDF" != "deauth" ]]
 	then
 		#~ if [[ -f "$LPATH"/settings/checkauto.txt ]]
@@ -272,20 +271,20 @@ do
 		#~ else
 			#~ checkauto=""$RS"Manual"$CE""
 		#~ fi				
-		echo -e ""$YS" 5"$CE") Check handshake quality" ##          "$YS"$checkauto"$CE""
-		echo -e ""$YS" 6"$CE") Autocheck for handshake"
+		echo -e """$YS"" 5""$CE"") Check handshake quality" ##          "$YS"$checkauto"$CE""
+		echo -e """$YS"" 6""$CE"") Autocheck for handshake"
 		#echo -e ""$YS" 7"$CE") Empty the file (when big & no handshake)"
 	fi
 	#~ if [[ "$LASTOPTIONS" != "" ]]
 	#~ then
 		#~ echo -e ""$YS"ENTER"$CE") Last option"
 	#~ fi
-	echo -e ""$YS" 0"$CE") Exit"
+	echo -e """$YS"" 0""$CE"") Exit"
 	read DT
 	if [[ "$DT" = 1 ]]
 	then
 		PER=0
-		echo -e "Number of deauths to send("$YS"0"$CE"=inf)("$YS"Enter"$CE"=0): "
+		echo -e "Number of deauths to send(""$YS""0""$CE""=inf)(""$YS""Enter""$CE""=0): "
 		read -e DEAUTHS
 		if [[ -z "$DEAUTHS" ]]
 		then
@@ -303,7 +302,7 @@ do
 		read DPT
 		if [[ ! "$DPT" -gt 0 ]]
 		then
-			echo -e ""$RS"Invalid number"$CE""
+			echo -e """$RS""Invalid number""$CE"""
 			sleep 2
 			LASTOPTIONS=""
 			continue
@@ -312,7 +311,7 @@ do
 		read DIS
 		if [[ ! "$DIS" -gt 0 ]]
 		then
-			echo -e ""$RS"Invalid number"$CE""
+			echo -e """$RS""Invalid number""$CE"""
 			sleep 2
 			LASTOPTIONS=""
 			continue
@@ -332,9 +331,9 @@ do
 			while true
 			do
 				clear
-				echo -e ""$YS" 1"$CE") Check with pyrit"
-				echo -e ""$YS" 2"$CE") Check with cowpatty"
-				echo -e ""$YS" b"$CE") Go back"
+				echo -e """$YS"" 1""$CE"") Check with pyrit"
+				echo -e """$YS"" 2""$CE"") Check with cowpatty"
+				echo -e """$YS"" b""$CE"") Go back"
 				echo -e "Choose: "
 				read CHW
 				if [[ "$CHW" = 1 ]]
@@ -360,7 +359,7 @@ do
 	then
 		if [[ "$HANDF" != "deauth" ]]
 		then
-			echo -e "Interval in seconds("$YS"Enter"$CE"="$YS"5"$CE"): "
+			echo -e "Interval in seconds(""$YS""Enter""$CE""=""$YS""5""$CE""): "
 			read Del
 			if [[ "$Del" == "" ]]
 			then
@@ -372,7 +371,7 @@ do
 				export HANDCAP
 				xterm -geometry 50x20+0+999999 -T "AUTOCHECK FOR HANDSHAKE" -e "lh21" & disown
 			else
-				echo -e ""$RS"Invalid interval"$CE""
+				echo -e """$RS""Invalid interval""$CE"""
 				sleep 2
 			fi
 		fi

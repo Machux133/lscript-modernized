@@ -1,112 +1,126 @@
 #! /bin/bash
 clear
 printf '\033]2;INSTALLER\a'
+
+#############################
+# lscript files, relative to the repo/install root
+#############################
+LSCRIPT_FILES=(
+	"l" "lh1" "lh2" "lh3" "lh31" "lh4" "lh41" "lh21" "lh42" "lh43"
+	"ls/l131.sh" "ls/l132.sh" "ls/l133.sh" "uninstall.sh" "install.sh"
+)
+# subset that also gets copied to /bin/lscript so 'l' can find its helpers on PATH
+LSCRIPT_BIN_FILES=(
+	"l" "lh1" "lh2" "lh3" "lh31" "lh4" "lh41" "lh21" "lh42" "lh43"
+)
+
+if [[ "$EUID" -ne 0 ]]
+then
+	echo -e "This script needs to be run as root (e.g. with sudo).\nAborting."
+	exit 1
+fi
+
 echo -e "Press \e[1;33many key\e[0m to install the script..."
-read -n 1
+read -n 1 -r
 clear
 apt-get -y install gnome-terminal
 clear
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ "$DIR" != "/root/lscript" ]]
 then
-	echo -e "You didn't follow the github's simple install instructions.I will try to do it for you..."
+	echo -e "You didn't follow the github's simple install instructions. I will try to do it for you..."
 	sleep 4
 	if [[ -d /root/lscript ]]
 	then
-		rm -r /root/lscript
+		rm -rf /root/lscript
 	fi
-	mkdir /root/lscript
+	mkdir -p /root/lscript
 	cp -r "$DIR"/* /root/lscript
 	chmod +x /root/lscript/install.sh
-	gnome-terminal -- "bash /root/lscript/install.sh"
+	gnome-terminal -- bash /root/lscript/install.sh
+	# The relocated copy above will do the real install; this instance is
+	# running from the wrong path and must not continue (it would otherwise
+	# race the new terminal and install everything twice).
+	exit 0
 fi
+
 echo -e "Installing lscript..."
 sleep 1
 echo -e "Fixing permissions"
 sleep 2
-chmod +x /root/lscript/lh1
-chmod +x /root/lscript/lh2
-chmod +x /root/lscript/lh3
-chmod +x /root/lscript/lh31
-chmod +x /root/lscript/l
-chmod +x /root/lscript/lh4
-chmod +x /root/lscript/lh41
-chmod +x /root/lscript/lh21
-chmod +x /root/lscript/lh42
-chmod +x /root/lscript/lh43
-chmod +x /root/lscript/ls/l131.sh
-chmod +x /root/lscript/ls/l132.sh
-chmod +x /root/lscript/ls/l133.sh
-chmod +x /root/lscript/uninstall.sh
+for f in "${LSCRIPT_FILES[@]}"
+do
+	chmod +x "/root/lscript/$f"
+done
+
 clear
 echo -e "Copying script to /bin/lscript"
 sleep 1
-mkdir /bin/lscript
-cd /root/lscript
-cp /root/lscript/l /bin/lscript
-cp /root/lscript/lh1 /bin/lscript
-cp /root/lscript/lh2 /bin/lscript
-cp /root/lscript/lh3 /bin/lscript
-cp /root/lscript/lh31 /bin/lscript
-cp /root/lscript/lh4 /bin/lscript
-cp /root/lscript/lh41 /bin/lscript
-cp /root/lscript/lh21 /bin/lscript
-cp /root/lscript/lh42 /bin/lscript
-cp /root/lscript/lh43 /bin/lscript
+mkdir -p /bin/lscript
+cd /root/lscript || exit 1
+for f in "${LSCRIPT_BIN_FILES[@]}"
+do
+	cp "/root/lscript/$f" /bin/lscript/
+done
+
 clear
 #required for gui
 apt-get -y install ncurses-dev
 clear
+
 if [[ ! -d /root/handshakes ]]
 then
-	mkdir /root/handshakes
+	mkdir -p /root/handshakes
 	echo -e "Made /root/handshake directory"
 else
-	echo -e "/root/handshakes directory detected.Good."
+	echo -e "/root/handshakes directory detected. Good."
 fi
+
 if [[ ! -d /root/wordlists ]]
 then
-	mkdir /root/wordlists
+	mkdir -p /root/wordlists
 	echo -e "Made /root/wordlists directory"
 else
-	echo -e "/root/wordlists directory detected.Good."
+	echo -e "/root/wordlists directory detected. Good."
 fi
+
 while true
 do
-clear
-echo -e "Are you \e[1;33mu\e[0mpdating or \e[1;33mi\e[0mnstalling the script?(\e[1;33mu\e[0m/\e[1;33mi\e[0m): "
-echo -e "Only use 'i' for the first time."
-read UORI
-if [[ "$UORI" = "u" ]]
-then 
 	clear
-	echo -e "Type 'changelog' to see what's new on this version"
-	sleep 3
-	break
-elif [[ "$UORI" = "i" ]]
-then
-	clear
-	BASHCHECK=$(cat ~/.bashrc | grep "bin/lscript")
-	if [[ "$BASHCHECK" != "" ]]
+	echo -e "Are you \e[1;33mu\e[0mpdating or \e[1;33mi\e[0mnstalling the script?(\e[1;33mu\e[0m/\e[1;33mi\e[0m): "
+	echo -e "Only use 'i' for the first time."
+	read -r UORI
+	if [[ "$UORI" = "u" ]]
 	then
-		echo -e "I SAID USE i ONLY ONE TIME..........."
+		clear
+		echo -e "Type 'changelog' to see what's new on this version"
 		sleep 3
+		break
+	elif [[ "$UORI" = "i" ]]
+	then
+		clear
+		if grep -qF "/bin/lscript" ~/.bashrc 2>/dev/null
+		then
+			echo -e "lscript is already on your PATH (~/.bashrc). Skipping, so it doesn't get added twice."
+			sleep 3
+		else
+			echo -e "Adding lscript to PATH so you can access it from anywhere"
+			sleep 1
+			echo 'export PATH=/bin/lscript:$PATH' >> ~/.bashrc
+			sleep 1
+		fi
+		export PATH=/bin/lscript:$PATH
+		clear
+		break
 	fi
-	echo -e "Adding lscript to PATH so you can access it from anywhere"
-	sleep 1
-	export PATH=/bin/lscript:$PATH
-	sleep 1
-	echo "export PATH=/bin/lscript:$PATH" >> ~/.bashrc
-	sleep 1
-	clear
-	break
-fi
 done
+
 clear
 echo -e "DONE"
 sleep 1
 clear
 echo -e "Open a NEW terminal and type 'l' to launch the script"
-sleep  4
+sleep 4
 gnome-terminal -- l
-exit
+exit 0

@@ -7,12 +7,12 @@ CE="\e[0m"
 #setting red-start
 RS="\e[1;31m"
 #setting frequent stings
-YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=yes)"
-YNNO="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=no)"
-YNONLY="("$YS"y"$CE"/"$YS"n"$CE")"
-PAKT="Press "$YS"any key$CE to"
-PAKTC="Press "$YS"any key$CE to continue..."
-PAKTGB="Press "$YS"any key$CE to go back..."
+YNYES="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=yes)"
+YNNO="(${YS}y${CE}/${YS}n${CE})(${YS}Enter${CE}=no)"
+YNONLY="(${YS}y${CE}/${YS}n${CE})"
+PAKT="Press ${YS}any key$CE to"
+PAKTC="Press ${YS}any key$CE to continue..."
+PAKTGB="Press ${YS}any key$CE to go back..."
 
 ####################################
 WLANNM=$(cat /root/lscript/wlanmon.txt)
@@ -27,10 +27,10 @@ function dash_calc
 	DASHESN="-"
 	while [ $numcalc != $calc ]
 	do
-		DASHESN=""$DASHESN"-"
+		DASHESN="${DASHESN}-"
 		numcalc=$(( numcalc+1 ))
 	done
-	echo -e "$DASHESN"$RS"$TERMINALTITLE"$CE"$DASHESN"
+	echo -e "$DASHESN""$RS""$TERMINALTITLE""$CE""$DASHESN"
 }
 function remove_temps
 {
@@ -59,23 +59,23 @@ function pre_scan
 	then
 		remove_temps
 		echo -e "Select what to scan: "
-		echo -e ""$YS"ENTER"$CE") All channels"
-		echo -e " "$YS"1"$CE"-"$YS"13"$CE") Specific channel"
-		echo -e "    "$YS"b"$CE") Go back"
+		echo -e """$YS""ENTER""$CE"") All channels"
+		echo -e " ""$YS""1""$CE""-""$YS""13""$CE"") Specific channel"
+		echo -e "    ""$YS""b""$CE"") Go back"
 		read CHANNELSL
 		if [[ "$CHANNELSL" = "" ]]
 		then
 			JS=1
-			airodump-ng $WLANNM -w /root/lscript/tempairodump
+			airodump-ng "$WLANNM" -w /root/lscript/tempairodump
 		elif [[ "$CHANNELSL" = "back" || "$CHANNELSL" = "b" ]]
 		then
 			clear
 			#~ CH="0"
-			break
+			return
 		else
 			#~ FJC=0
 			JC=1
-			airodump-ng -c $CHANNELSL $WLANNM -w /root/lscript/tempairodump
+			airodump-ng -c "$CHANNELSL" "$WLANNM" -w /root/lscript/tempairodump
 		fi
 	fi
 		ap_sort_and_choose
@@ -110,7 +110,7 @@ do
 	then
 		if [[ ${ziswep[$APCHOOSE]} != 1 ]]
 		then
-			echo -e ""$RS"Please select a WEP protected network."$CE""
+			echo -e """$RS""Please select a WEP protected network.""$CE"""
 			sleep 2
 			#~ echo -e "Press "$YS"enter"$CE" to go back"
 			#~ read
@@ -215,8 +215,8 @@ then
 		n3=$((n3+1)) 
 	done
 	n3=1
-	echo -e ""$YS"YELLOW"$CE"=WEP-PROTECTED NETWORK"
-	echo -e ""$RS"   RED"$CE"=WPA/WPA2-PROTECTED OR OPEN NETWORK"
+	echo -e """$YS""YELLOW""$CE""=WEP-PROTECTED NETWORK"
+	echo -e """$RS""   RED""$CE""=WPA/WPA2-PROTECTED OR OPEN NETWORK"
 	echo -e "_________________________________________________________________________________"
 	echo -e "     POWER ESSID                                  MAC               CLIENTS  DATA"
 	while [ $n3 -le "$lines" ]
@@ -227,12 +227,12 @@ then
 		SPACES=""
 		while [ $numcalc != $calc ]
 		do
-			SPACES=""$SPACES"_"
+			SPACES="${SPACES}_"
 			numcalc=$(( numcalc+1 ))
 		done
 		if [[ "$n3" -le 9 ]]
 		then
-			num=" "$n3""
+			num=" ${n3}"
 		else
 			num=$n3
 		fi
@@ -247,7 +247,7 @@ then
 		then
 			space="  "
 		fi
-		DATAA=" "$RS"0"$CE""
+		DATAA=" ${RS}0${CE}"
 		if [[ ${zpowerfixed[$n3]} -lt 100 ]]
 		then
 			size2=${#zessid[$n3]}
@@ -283,22 +283,22 @@ then
 			else
 				START="$RS"
 			fi
-			echo -e ""$YS""$num""$CE") "$START"${space}"${zpowerfixed[$n3]}"%   "${zessid[$n3]}""$SPACES""${zmac[$n3]}" "$CLIENTS"     "$DATAA""$CE""
+			echo -e "${YS}${num}${CE}) ${START}${space}${zpowerfixed[$n3]}%   ${zessid[$n3]}${SPACES}${zmac[$n3]} ${CLIENTS}     ${DATAA}${CE}"
 		fi
 		n3=$((n3+1))
 	done
 else
-	echo -e ""$RS"No networks found nearby."$CE""
+	echo -e """$RS""No networks found nearby.""$CE"""
 fi
-echo -e ""$YS" r"$CE") rescan"
-echo -e ""$YS" b"$CE") Go back"
+echo -e """$YS"" r""$CE"") rescan"
+echo -e """$YS"" b""$CE"") Go back"
 echo -e "Choose: "
 }
 function select_a_network_first
 {
 	if [[ "$SELECTED" != 1 ]]
 	then
-		echo -e ""$RS"Select a network first"$CE""
+		echo -e """$RS""Select a network first""$CE"""
 		sleep 3
 		OUTPUT=1
 	fi
@@ -314,23 +314,23 @@ do
 	printf '\033]2;WEP MENU\a'
 	if [[ "$TARGE" = "" ]]
 	then
-		TARGE=""$RS"None"$CE""
+		TARGE="${RS}None${CE}"
 	fi
 	IVF="$WEPF"
 	if [[ "$IVF" = "" ]]
 	then
-		IVF=""$RS"None"$CE""
+		IVF="${RS}None${CE}"
 	fi
-	echo -e ""$YS" w"$CE") WifiTe automated tool"
+	echo -e """$YS"" w""$CE"") WifiTe automated tool"
 	echo -e ""
-	echo -e ""$YS" 1"$CE") Scan networks nearby             Selected:"$YS"$TARGE"$CE""
-	echo -e ""$YS" 2"$CE") Start capturing IVs              File:"$YS"$IVF"$CE""
-	echo -e ""$YS" 3"$CE") Fakeauth-arpreplay               If no clients connected"
-	echo -e ""$YS" 4"$CE") Fakeauth-fragmentation           not yet"
-	echo -e ""$YS" 5"$CE") Chop-chop                        not yet"
-	echo -e ""$YS" 6"$CE") Aircrack the ivs"
-	echo -e ""$YS" 7"$CE") WiFi autopwner - automated tool"
-	echo -e ""$YS" 0"$CE") Exit"
+	echo -e """$YS"" 1""$CE"") Scan networks nearby             Selected:""$YS""$TARGE""$CE"""
+	echo -e """$YS"" 2""$CE"") Start capturing IVs              File:""$YS""$IVF""$CE"""
+	echo -e """$YS"" 3""$CE"") Fakeauth-arpreplay               If no clients connected"
+	echo -e """$YS"" 4""$CE"") Fakeauth-fragmentation           not yet"
+	echo -e """$YS"" 5""$CE"") Chop-chop                        not yet"
+	echo -e """$YS"" 6""$CE"") Aircrack the ivs"
+	echo -e """$YS"" 7""$CE"") WiFi autopwner - automated tool"
+	echo -e """$YS"" 0""$CE"") Exit"
 	echo -e "Choose: "
 	read WEP
 	clear
@@ -364,7 +364,7 @@ do
 		size=${#MYMAC}
 		if [[ "$size" != 17 ]]
 		then
-			echo -e ""$RS"Could not find your MAC"$CE""
+			echo -e """$RS""Could not find your MAC""$CE"""
 			sleep 2
 			continue
 		fi
@@ -381,15 +381,15 @@ do
 	then
 		if [[ ! -f "$WEPFF" ]]
 		then
-			echo -e ""$RS"File "$WEPFF" not found"$CE""
+			echo -e """$RS""File ""$WEPFF"" not found""$CE"""
 			sleep 2
 		fi
 		xterm -T "AIRCRACK THE IVs" -hold -e "aircrack-ng $WEPFF"
 	elif [[ "$WEP" = "7" ]]
 	then
-		cd /root/WiFi-autopwner
+		cd /root/WiFi-autopwner || exit
 		./wifi-autopwner.sh
-		cd
+		cd || exit
 	elif [[ "$WEP" = "0" ]]
 	then
 		exit

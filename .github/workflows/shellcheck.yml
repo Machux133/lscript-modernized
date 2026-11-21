@@ -1,0 +1,22 @@
+name: ShellCheck
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          severity: warning
+          check_together: 'yes'
+          # Most scripts in this repo have no file extension, so they need
+          # to be listed explicitly for ShellCheck to pick them up.
+          additional_files: 'l lh1 lh2 lh21 lh3 lh31 lh4 lh41 lh42 lh43 install.sh uninstall.sh ls/l131.sh ls/l132.sh ls/l133.sh'
