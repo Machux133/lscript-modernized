@@ -33,6 +33,23 @@ then
 else
 	PKGMGR="unknown"
 fi
+function open_terminal
+{
+	#usage: open_terminal "<command line>"
+	local cmdline="$1"
+	if command -v gnome-terminal &> /dev/null
+	then
+		gnome-terminal -- bash -c "$cmdline"
+	elif command -v konsole &> /dev/null
+	then
+		konsole -e bash -c "$cmdline" & disown
+	elif command -v xterm &> /dev/null
+	then
+		xterm -e bash -c "$cmdline" & disown
+	else
+		echo -e "No supported terminal emulator found (gnome-terminal/konsole/xterm). Run this manually: $cmdline"
+	fi
+}
 function pkg_install
 {
 	#package names are given as their apt name; translate the few
@@ -62,7 +79,12 @@ function pkg_install
 echo -e "Press \e[1;33many key\e[0m to install the script..."
 read -n 1 -r
 clear
-pkg_install gnome-terminal
+#only install gnome-terminal if this system has no terminal emulator
+#open_terminal can already use (konsole/xterm on KDE, for instance)
+if ! command -v gnome-terminal &> /dev/null && ! command -v konsole &> /dev/null && ! command -v xterm &> /dev/null
+then
+	pkg_install gnome-terminal
+fi
 clear
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -77,7 +99,7 @@ then
 	mkdir -p /root/lscript
 	cp -r "$DIR"/* /root/lscript
 	chmod +x /root/lscript/install.sh
-	gnome-terminal -- bash /root/lscript/install.sh
+	open_terminal "bash /root/lscript/install.sh"
 	# The relocated copy above will do the real install; this instance is
 	# running from the wrong path and must not continue (it would otherwise
 	# race the new terminal and install everything twice).
@@ -161,5 +183,5 @@ sleep 1
 clear
 echo -e "Open a NEW terminal and type 'l' to launch the script"
 sleep 4
-gnome-terminal -- l
+open_terminal "l"
 exit 0

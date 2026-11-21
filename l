@@ -53,12 +53,12 @@ function pkg_install
 				libxslt1-dev) dnf_pkgs+=("libxslt-devel") ;;
 				libcapstone3|libcapstone-dev) dnf_pkgs+=("capstone-devel") ;;
 				libffi-dev) dnf_pkgs+=("libffi-devel") ;;
-				gnome-terminal|fuse|pulseaudio|nmap|arp-scan|iftop|geany|bleachbit|sqlmap|wifite|masscan|mingw-w64|file|php-curl|netdiscover)
+				gnome-terminal|fuse|pulseaudio|nmap|arp-scan|iftop|geany|bleachbit|sqlmap|wifite|masscan|mingw-w64|file|php-curl|netdiscover|bcrypt|wine|ruby|rubygem-bundler|nodejs|make|gcc-c++|git|python3|python3-requests|python3-scapy|curl)
 					dnf_pkgs+=("$p") ;;
 				open-vm-tools-desktop)
 					dnf_pkgs+=("open-vm-tools-desktop" "open-vm-tools") ;;
-				websploit|shellter|openvas|beef-xss|msfpc|metasploit-framework|bcrypt|nginx-full|nginx-common)
-					echo -e """$RS""'$p' isn't available via dnf on Fedora/RHEL-family systems (needs a manual install, RPM Fusion/COPR, or isn't packaged there at all). Skipping.""$CE""" ;;
+				nginx-full|nginx-common)
+					echo -e """$RS""'$p' isn't available via dnf on Fedora/RHEL-family systems (Debian-only split package, not needed there). Skipping.""$CE""" ;;
 				*)
 					echo -e """$RS""'$p' hasn't been verified on dnf-based systems - trying the same package name, but it may not exist there.""$CE"""
 					dnf_pkgs+=("$p") ;;
@@ -107,6 +107,44 @@ function pkg_autoremove
 	elif [[ "$PKGMGR" = "apt" ]]
 	then
 		apt-get -y autoremove
+	fi
+}
+#############TERMINAL EMULATOR ABSTRACTION###############
+#lscript opens its helper menus (lh1/lh2/lh3/lh4) and a few tools in
+#their own terminal window via gnome-terminal. open_terminal also
+#supports konsole (KDE) and xterm as fallbacks, so this works outside
+#GNOME too.
+function open_terminal
+{
+	#usage: open_terminal "<WxH+X+Y geometry, or "" for none>" "<command line>"
+	local geometry="$1"
+	local cmdline="$2"
+	if command -v gnome-terminal &> /dev/null
+	then
+		if [[ "$geometry" = "" ]]
+		then
+			gnome-terminal -- bash -c "$cmdline"
+		else
+			gnome-terminal --geometry "$geometry" -- bash -c "$cmdline"
+		fi
+	elif command -v konsole &> /dev/null
+	then
+		#konsole's --geometry has been unreliable for sizing/positioning
+		#new windows across KDE 4/5/6 (KDE bug 147094), so geometry is
+		#only honored on gnome-terminal/xterm. konsole's process model
+		#isn't guaranteed to detach like gnome-terminal does, so this is
+		#backgrounded explicitly.
+		konsole -e bash -c "$cmdline" & disown
+	elif command -v xterm &> /dev/null
+	then
+		if [[ "$geometry" = "" ]]
+		then
+			xterm -e bash -c "$cmdline" & disown
+		else
+			xterm -geometry "$geometry" -e bash -c "$cmdline" & disown
+		fi
+	else
+		echo -e """$RS""No supported terminal emulator found (gnome-terminal/konsole/xterm). Run this manually: ""$CE""$cmdline"
 	fi
 }
 detect_pkgmgr
@@ -1709,9 +1747,9 @@ then
 		export PORTTCP
 		export PORTUDP
 		cd "$LPATH"/ls || exit
-		gnome-terminal --geometry 60x12+0+999999 -e ./l131.sh
-		gnome-terminal --geometry 60x20+999999+999999 -e ./l133.sh
-		gnome-terminal --geometry 60x20+999999+0 -e ./l132.sh
+		open_terminal "60x12+0+999999" "./l131.sh"
+		open_terminal "60x20+999999+999999" "./l133.sh"
+		open_terminal "60x20+999999+0" "./l132.sh"
 		sslstrip -l "$PORTTCP" -w /root/sslstrip.log
 		echo -e "$PAKTGB"
 		$READAK
@@ -1740,9 +1778,9 @@ then
 		export PORTTCP
 		export PORTUDP
 		cd "$LPATH"/ls || exit
-		gnome-terminal --geometry 60x25+0+999999 -e ./l131.sh
-		gnome-terminal --geometry 60x25+999999+0 -e ./l132.sh
-		gnome-terminal --geometry 60x25+999999+999999 -e ./l133.sh
+		open_terminal "60x25+0+999999" "./l131.sh"
+		open_terminal "60x25+999999+0" "./l132.sh"
+		open_terminal "60x25+999999+999999" "./l133.sh"
 		sslstrip -l "$PORTTCP" -w /root/sslstrip.log
 		echo -e "$PAKTGB"
 		$READAK
@@ -1835,8 +1873,8 @@ then
 		export TARGIP
 		export GATENM
 		cd "$LPATH"/ls || exit
-		gnome-terminal --geometry 60x15+999999+0 -e ./l132.sh
-		gnome-terminal --geometry 60x15+999999+999999 -e ./l133.sh
+		open_terminal "60x15+999999+0" "./l132.sh"
+		open_terminal "60x15+999999+999999" "./l133.sh"
 	#~ elif [[ "$MITMSET" = "4" ]]
 	#~ then
 		#~ service apache2 start
@@ -1849,7 +1887,7 @@ then
 		ip addr | grep '/24' | awk -F "inet " '{print $2}' | cut -d '/' -f1
 		echo -e "$PAKTC"
 		$READAK
-		gnome-terminal --geometry 66x40+999999+0 -e setoolkit
+		open_terminal "66x40+999999+0" "setoolkit"
 	elif [[ "$MITMSET" = "5" ]]
 	then
 		echo -e "Making you a hosts.txt file"
@@ -4421,7 +4459,7 @@ function remote_access
 		if [[ -d /root/ARCANUS ]]
 		then
 			cd /root/ARCANUS || exit
-			gnome-terminal -e "./ARCANUS & disown"
+			open_terminal "" "./ARCANUS & disown"
 		else	
 			echo -e "$TNI"
 			read INSTALL
@@ -6436,7 +6474,7 @@ function update_lscript
 				echo -e "$PAKTC"
 				$READAK
 				cd "$LPATH" || exit
-				gnome-terminal -e ./install.sh
+				open_terminal "" "./install.sh"
 				clear 
 				sleep 1
 				rm -rf /root/lscriptold
@@ -6974,7 +7012,7 @@ function new_terminal
 			sleep 1
 			FJC=0
 			export FJC
-			gnome-terminal --geometry 87x35+9999+0 -- lh1
+			open_terminal "87x35+9999+0" "lh1"
 			sleep 1
 			exec bash "$0"
 			break
@@ -6983,7 +7021,7 @@ function new_terminal
 			clear
 			echo -e "Moving into new terminal..."
 			sleep 1
-			gnome-terminal --geometry 80x25+9999+0 -- lh3
+			open_terminal "80x25+9999+0" "lh3"
 			sleep 1
 			exec bash "$0"
 			break
@@ -6991,7 +7029,7 @@ function new_terminal
 		then
 			echo -e "Moving into new terminal..."
 			sleep 1
-			gnome-terminal --geometry 80x25+9999+0 -- lh4
+			open_terminal "80x25+9999+0" "lh4"
 			sleep 1
 			exec bash "$0"
 			break
@@ -10268,6 +10306,19 @@ check_if_ks
 			pip2.7 install ctypes
 		fi
 	}
+	function install_metasploit_framework
+	{
+		#metasploit-framework isn't packaged for Fedora/dnf at all; Rapid7's
+		#own official installer is distro-agnostic (bundles its own deps)
+		#and is the documented way to get it on any non-Debian system.
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			pkg_install curl
+			curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /root/msfinstall && chmod 755 /root/msfinstall && /root/msfinstall
+		else
+			pkg_install metasploit-framework
+		fi
+	}
 	function install_eternalscanner
 	{
 		foldname="eternal_scanner"
@@ -10276,7 +10327,8 @@ check_if_ks
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			pkg_install masscan metasploit-framework
+			pkg_install masscan
+			install_metasploit_framework
 		fi
 	}
 	function install_eaphammer
@@ -10362,16 +10414,36 @@ check_if_ks
 	}
 	function install_websploit
 	{
-		pkg_install websploit
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			echo -e """$RS""websploit has no Fedora package and is unmaintained upstream (abandoned since ~2015, last Debian packaging in 2022). Cloning the Debian/Kali packaging source instead - run it with: python3 websploit""$CE"""
+			pkg_install python3 python3-requests python3-scapy
+			foldname="websploit"
+			gitlink="https://gitlab.com/kalilinux/packages/websploit.git"
+			install_default
+		else
+			pkg_install websploit
+		fi
 	}
 	function install_openvas
 	{
-		pkg_install openvas
-		openvas-setup
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			echo -e """$RS""OpenVAS/Greenbone has no native Fedora/dnf package. Greenbone themselves recommend either their official container setup (https://greenbone.github.io/docs/latest/22.4/container/) or a source build (https://greenbone.github.io/docs/latest/22.4/source-build/index.html) - this needs to be done manually, lscript can't automate it safely.""$CE"""
+		else
+			pkg_install openvas
+			openvas-setup
+		fi
 	}
 	function install_shellter
 	{
-		pkg_install shellter
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			pkg_install wine
+			echo -e """$YS""Shellter is a Windows PE tool. Wine is installed - download Shellter yourself from https://www.shellterproject.com and run it with: wine Shellter.exe""$CE"""
+		else
+			pkg_install shellter
+		fi
 	}
 	function install_geany
 	{
@@ -10570,7 +10642,21 @@ check_if_ks
 	}
 	function install_msfpc
 	{
-		pkg_install msfpc
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			foldname="msfpc"
+			gitlink="https://github.com/g0tmi1k/msfpc.git"
+			install_default
+			cloned=$?
+			if [[ "$cloned" == 1 ]]
+			then
+				chmod +x msfpc.sh
+				ln -sf /root/msfpc/msfpc.sh /usr/local/bin/msfpc
+				echo -e """$YS""msfpc is installed, but needs the Metasploit Framework installed separately to actually work (see the 'metasploit-framework' install option).""$CE"""
+			fi
+		else
+			pkg_install msfpc
+		fi
 	}
 	function install_morphhta
 	{
@@ -10621,7 +10707,22 @@ check_if_ks
 	}
 	function install_beef
 	{
-		pkg_install beef-xss
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			pkg_install ruby rubygem-bundler nodejs make gcc-c++ git
+			foldname="beef"
+			gitlink="https://github.com/beefproject/beef"
+			install_default
+			cloned=$?
+			if [[ "$cloned" == 1 ]]
+			then
+				gem install bundler
+				chmod +x install
+				./install
+			fi
+		else
+			pkg_install beef-xss
+		fi
 	}
 	function install_mitmf
 	{
