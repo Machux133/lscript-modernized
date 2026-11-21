@@ -67,6 +67,10 @@ with current tooling, without changing the menus or workflow you already know:
   source instead; `netdiscover`'s upstream build has known issues on current systems and
   may still need manual fixing. Installing the git-clone-based tools themselves is still
   untested on a real run - please report any issues you hit.
+- **Helper scripts renamed to say what they do.** `lh1`/`lh2`/`lh21`/`lh3`/`lh4` are now
+  `handshake-menu`/`deauth-menu`/`deauth-autocheck`/`wps-menu`/`wep-menu`. Four other
+  `lhNN` files (`lh31`, `lh41`, `lh42`, `lh43`) turned out to be dead leftovers nothing
+  actually called anymore and were removed rather than renamed.
 - **KDE support (`konsole`).** lscript used to hard-depend on `gnome-terminal` for every
   pop-up window (deauth helper, handshake capture, etc.). It now also supports `konsole`
   (confirmed working live on KDE Plasma/Fedora 44 - opens, runs a compound shell command
