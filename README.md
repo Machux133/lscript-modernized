@@ -52,6 +52,12 @@ with current tooling, without changing the menus or workflow you already know:
   down to a small, documented list of "feature looks unfinished" cases left for a human
   decision rather than guessed at.
 - **Added a ShellCheck GitHub Actions workflow** so future changes get checked automatically.
+- **Basic Fedora/RHEL-family (dnf) support.** The script auto-detects `apt-get` vs `dnf`
+  and translates package names where they differ. Tools that git-clone their source
+  already worked on any distro. A handful of niche tools whose Fedora availability
+  I couldn't verify (websploit, shellter, openvas, beef-xss, msfpc, metasploit-framework)
+  print a clear "not available via dnf" message instead of guessing - this hasn't been
+  tested on a real Fedora install yet, so please report any issues you hit.
 
 None of this changes how you use the script day to day - it's the same menus and
 keyboard shortcuts as before. The `ip`/`iw` migration was reviewed line by line and
