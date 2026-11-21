@@ -1748,9 +1748,9 @@ then
 		export PORTTCP
 		export PORTUDP
 		cd "$LPATH"/ls || exit
-		open_terminal "60x12+0+999999" "./l131.sh"
-		open_terminal "60x20+999999+999999" "./l133.sh"
-		open_terminal "60x20+999999+0" "./l132.sh"
+		open_terminal "60x12+0+999999" "./dns2proxy.sh"
+		open_terminal "60x20+999999+999999" "./arpspoof-poison-gateway.sh"
+		open_terminal "60x20+999999+0" "./arpspoof-poison-target.sh"
 		sslstrip -l "$PORTTCP" -w /root/sslstrip.log
 		echo -e "$PAKTGB"
 		$READAK
@@ -1779,9 +1779,9 @@ then
 		export PORTTCP
 		export PORTUDP
 		cd "$LPATH"/ls || exit
-		open_terminal "60x25+0+999999" "./l131.sh"
-		open_terminal "60x25+999999+0" "./l132.sh"
-		open_terminal "60x25+999999+999999" "./l133.sh"
+		open_terminal "60x25+0+999999" "./dns2proxy.sh"
+		open_terminal "60x25+999999+0" "./arpspoof-poison-target.sh"
+		open_terminal "60x25+999999+999999" "./arpspoof-poison-gateway.sh"
 		sslstrip -l "$PORTTCP" -w /root/sslstrip.log
 		echo -e "$PAKTGB"
 		$READAK
@@ -1874,8 +1874,8 @@ then
 		export TARGIP
 		export GATENM
 		cd "$LPATH"/ls || exit
-		open_terminal "60x15+999999+0" "./l132.sh"
-		open_terminal "60x15+999999+999999" "./l133.sh"
+		open_terminal "60x15+999999+0" "./arpspoof-poison-target.sh"
+		open_terminal "60x15+999999+999999" "./arpspoof-poison-gateway.sh"
 	#~ elif [[ "$MITMSET" = "4" ]]
 	#~ then
 		#~ service apache2 start
