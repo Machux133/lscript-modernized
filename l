@@ -110,7 +110,8 @@ function pkg_autoremove
 	fi
 }
 #############TERMINAL EMULATOR ABSTRACTION###############
-#lscript opens its helper menus (lh1/lh2/lh3/lh4) and a few tools in
+#lscript opens its helper menus (handshake-menu/deauth-menu/wps-menu/
+#wep-menu) and a few tools in
 #their own terminal window via gnome-terminal. open_terminal also
 #supports konsole (KDE) and xterm as fallbacks, so this works outside
 #GNOME too.
@@ -7020,7 +7021,7 @@ function new_terminal
 			sleep 1
 			FJC=0
 			export FJC
-			open_terminal "87x35+9999+0" "lh1"
+			open_terminal "87x35+9999+0" "handshake-menu"
 			sleep 1
 			exec bash "$0"
 		elif [[ "$YORNAA" = "11" ]]
@@ -7028,14 +7029,14 @@ function new_terminal
 			clear
 			echo -e "Moving into new terminal..."
 			sleep 1
-			open_terminal "80x25+9999+0" "lh3"
+			open_terminal "80x25+9999+0" "wps-menu"
 			sleep 1
 			exec bash "$0"
 		elif [[ "$YORNAA" = "12" ]]
 		then
 			echo -e "Moving into new terminal..."
 			sleep 1
-			open_terminal "80x25+9999+0" "lh4"
+			open_terminal "80x25+9999+0" "wep-menu"
 			sleep 1
 			exec bash "$0"
 		fi

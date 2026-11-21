@@ -3,7 +3,7 @@
 WLANNM=$(cat /root/lscript/wlanmon.txt)
 export WLANNM
 SCW=1
-function defaults_lh3
+function defaults_wps
 {
 #path for lscript
 	LPATH="/root/lscript"
@@ -1152,5 +1152,5 @@ done
 }
 
 ####################################
-defaults_lh3
+defaults_wps
 main_wps_options

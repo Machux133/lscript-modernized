@@ -19,4 +19,4 @@ jobs:
           check_together: 'yes'
           # Most scripts in this repo have no file extension, so they need
           # to be listed explicitly for ShellCheck to pick them up.
-          additional_files: 'l lh1 lh2 lh21 lh3 lh31 lh4 lh41 lh42 lh43 install.sh uninstall.sh ls/l131.sh ls/l132.sh ls/l133.sh'
+          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh ls/l131.sh ls/l132.sh ls/l133.sh'

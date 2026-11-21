@@ -1,7 +1,7 @@
 #! /bin/bash
 WLANNM=$(cat /root/lscript/wlanmon.txt)
 export WLANNM
-#opens the deauth-pid helper (lh2) in its own small terminal window.
+#opens the deauth helper (deauth-menu) in its own small terminal window.
 #Supports gnome-terminal, KDE's konsole, and xterm as a last resort.
 function open_terminal
 {
@@ -23,7 +23,7 @@ function open_terminal
 	fi
 }
 #-----------------FUNCTIONS-----------------
-function defaults_lh1
+function defaults_handshake
 {
 #path for lscript
 	LPATH="/root/lscript"
@@ -93,7 +93,7 @@ then
 	then
 		rm "$HANDCAP"
 	fi
-	open_terminal "70x10+0+0" "lh2"
+	open_terminal "70x10+0+0" "deauth-menu"
 	HANDFORDEAUTH="/root/handshakes/$HANDF-01.csv"
 	export HANDFORDEAUTH
 	airodump-ng --bssid "$TARGB" -c "$TARGC" -w /root/handshakes/"$HANDF" "$WLANNM" # & jobs -p > /root/lscript/dpidd.txt
@@ -131,7 +131,7 @@ else
 	fi
 	HANDF="deauth"
 	HANDFORDEAUTH="/root/handshakes/deauth-01.csv"
-	open_terminal "70x10+0+0" "lh2"
+	open_terminal "70x10+0+0" "deauth-menu"
 	airodump-ng --bssid "$TARGB" -c "$TARGC" -w /root/handshakes/$HANDF "$WLANNM"
 	if [[ -f "$LPATH"/dpid.txt ]]
 	then
@@ -169,7 +169,7 @@ else
 		then
 			rm "$HANDFFP"
 		fi
-		open_terminal "70x10+0+0" "lh2"
+		open_terminal "70x10+0+0" "deauth-menu"
 		airodump-ng --bssid "$TARGB" -c "$TARGC" -w /root/handshakes/"$HANDF" "$WLANNM"
 		if [[ -f "$LPATH"/dpid.txt ]]
 		then
@@ -359,7 +359,7 @@ function capture_again
 			read CAGAIN
 			if [[ ! "$CAGAIN" = "n" ]]
 			then
-				open_terminal "70x10+0+0" "lh2"
+				open_terminal "70x10+0+0" "deauth-menu"
 				airodump-ng --bssid "$TARGB" -c "$TARGC" -w /root/handshakes/"$HANDF" "$WLANNM"
 				validhandshake
 				exec bash "$0"
@@ -934,5 +934,5 @@ fi
 done	
 }
 #-------------------------------------------
-defaults_lh1
+defaults_handshake
 main_handshake_options

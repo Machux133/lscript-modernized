@@ -6,12 +6,12 @@ printf '\033]2;INSTALLER\a'
 # lscript files, relative to the repo/install root
 #############################
 LSCRIPT_FILES=(
-	"l" "lh1" "lh2" "lh3" "lh31" "lh4" "lh41" "lh21" "lh42" "lh43"
+	"l" "handshake-menu" "deauth-menu" "deauth-autocheck" "wps-menu" "wep-menu"
 	"ls/l131.sh" "ls/l132.sh" "ls/l133.sh" "uninstall.sh" "install.sh"
 )
 # subset that also gets copied to /bin/lscript so 'l' can find its helpers on PATH
 LSCRIPT_BIN_FILES=(
-	"l" "lh1" "lh2" "lh3" "lh31" "lh4" "lh41" "lh21" "lh42" "lh43"
+	"l" "handshake-menu" "deauth-menu" "deauth-autocheck" "wps-menu" "wep-menu"
 )
 
 if [[ "$EUID" -ne 0 ]]

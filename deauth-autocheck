@@ -2,7 +2,7 @@
 DPIDDD=$$
 echo $DPIDDD > /root/lscript/dpiddd.txt
 i=1
-# Del is exported by lh2 right before it launches this script in a new terminal.
+# Del is exported by deauth-menu right before it launches this script in a new terminal.
 # shellcheck disable=SC2154
 delay="$Del"
 if [[ "$delay" == "" ]]

@@ -21,7 +21,7 @@ do
 	j=$((j+1))
 done
 }
-function defaults_lh2
+function defaults_deauth
 {
 #path for lscript
 	LPATH="/root/lscript"
@@ -191,7 +191,7 @@ function cowpatty_hand_check
 		sleep 2
 	fi
 }
-defaults_lh2
+defaults_deauth
 if [[ -f "$LPATH"/settings/ignorenegativeone.txt ]]
 then
 	read IGN < "${LPATH}/settings/ignorenegativeone.txt"
@@ -336,7 +336,7 @@ do
 			then
 				export Del
 				export HANDCAP
-				xterm -geometry 50x20+0+999999 -T "AUTOCHECK FOR HANDSHAKE" -e "lh21" & disown
+				xterm -geometry 50x20+0+999999 -T "AUTOCHECK FOR HANDSHAKE" -e "deauth-autocheck" & disown
 			else
 				echo -e """$RS""Invalid interval""$CE"""
 				sleep 2
