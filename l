@@ -53,7 +53,7 @@ function pkg_install
 				libxslt1-dev) dnf_pkgs+=("libxslt-devel") ;;
 				libcapstone3|libcapstone-dev) dnf_pkgs+=("capstone-devel") ;;
 				libffi-dev) dnf_pkgs+=("libffi-devel") ;;
-				gnome-terminal|fuse|pulseaudio|nmap|arp-scan|iftop|geany|bleachbit|sqlmap|wifite|masscan|mingw-w64|file|php-curl|netdiscover|bcrypt|wine|ruby|rubygem-bundler|nodejs|make|gcc-c++|git|python3|python3-requests|python3-scapy|curl)
+				gnome-terminal|fuse|pulseaudio|nmap|arp-scan|iftop|geany|bleachbit|masscan|file|php-curl|bcrypt|wine|ruby|rubygem-bundler|nodejs|make|gcc-c++|git|python3|python3-requests|python3-scapy|curl|autoconf|automake|libtool|libnet-devel|libpcap-devel|hwdata)
 					dnf_pkgs+=("$p") ;;
 				open-vm-tools-desktop)
 					dnf_pkgs+=("open-vm-tools-desktop" "open-vm-tools") ;;
@@ -9904,7 +9904,24 @@ check_if_ks
 	}
 	function install_wifite
 	{
-		pkg_install wifite
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			#confirmed via `dnf repoquery`: no "wifite" package or
+			#virtual provide exists on Fedora. wifite2's own README
+			#installs system-wide via setup.py, placing the `wifite`
+			#executable on PATH (at /usr/sbin/wifite) - matching what
+			#the rest of this script expects to just run.
+			foldname="wifite2"
+			gitlink="https://github.com/derv82/wifite2.git"
+			install_default
+			cloned=$?
+			if [[ "$cloned" == 1 ]]
+			then
+				python3 setup.py install
+			fi
+		else
+			pkg_install wifite
+		fi
 	}
 	function install_wifiphisher
 	{
@@ -10410,7 +10427,27 @@ check_if_ks
 	}
 	function install_netdiscover
 	{
-		pkg_install netdiscover
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			#confirmed via `dnf repoquery`: no "netdiscover" package or
+			#virtual provide on Fedora. Its build (autotools, needs
+			#libnet/libpcap) is reported flaky upstream (broken OUI
+			#database URL, libpcap-version build breaks), so this is
+			#attempted but may need manual fixing - not a one-line fix
+			#that can be guessed from here.
+			pkg_install autoconf automake libtool libnet-devel libpcap-devel hwdata
+			foldname="netdiscover"
+			gitlink="https://github.com/netdiscover-scanner/netdiscover.git"
+			install_default
+			cloned=$?
+			if [[ "$cloned" == 1 ]]
+			then
+				echo -e """$RS""netdiscover's build has reported issues upstream on recent systems (e.g. an expired OUI-database URL). Attempting the build now; if it fails, check https://github.com/netdiscover-scanner/netdiscover for current build instructions.""$CE"""
+				autoreconf -fiv && ./configure && make && make install
+			fi
+		else
+			pkg_install netdiscover
+		fi
 	}
 	function install_websploit
 	{
@@ -10678,7 +10715,15 @@ check_if_ks
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			pkg_install mingw-w64
+			if [[ "$PKGMGR" = "dnf" ]]
+			then
+				#"mingw-w64" isn't a real package name on Fedora
+				#(confirmed via dnf repoquery) - the actual
+				#cross-compiler packages are mingw64-gcc/mingw32-gcc
+				dnf -y install mingw64-gcc mingw32-gcc
+			else
+				pkg_install mingw-w64
+			fi
 		fi
 	}
 	function install_demiguise
@@ -10756,7 +10801,26 @@ check_if_ks
 	}
 	function install_sqlmap
 	{
-		pkg_install sqlmap
+		if [[ "$PKGMGR" = "dnf" ]]
+		then
+			#confirmed via `dnf repoquery`: no "sqlmap" package or
+			#virtual provide exists on Fedora. sqlmap's own README says
+			#to just clone and run sqlmap.py, no build/install step -
+			#the rest of this script expects a plain `sqlmap` command
+			#and checks for /usr/bin/sqlmap, so wrap it the same way
+			#Debian's package does.
+			foldname="sqlmap"
+			gitlink="https://github.com/sqlmapproject/sqlmap.git"
+			install_default
+			cloned=$?
+			if [[ "$cloned" == 1 ]]
+			then
+				printf '#!/bin/sh\nexec python3 /root/sqlmap/sqlmap.py "$@"\n' > /usr/bin/sqlmap
+				chmod +x /usr/bin/sqlmap
+			fi
+		else
+			pkg_install sqlmap
+		fi
 	}
 	function install_patator
 	{
