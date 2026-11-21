@@ -52,12 +52,18 @@ with current tooling, without changing the menus or workflow you already know:
   down to a small, documented list of "feature looks unfinished" cases left for a human
   decision rather than guessed at.
 - **Added a ShellCheck GitHub Actions workflow** so future changes get checked automatically.
-- **Basic Fedora/RHEL-family (dnf) support.** The script auto-detects `apt-get` vs `dnf`
-  and translates package names where they differ. Tools that git-clone their source
-  already worked on any distro. A handful of niche tools whose Fedora availability
-  I couldn't verify (websploit, shellter, openvas, beef-xss, msfpc, metasploit-framework)
-  print a clear "not available via dnf" message instead of guessing - this hasn't been
-  tested on a real Fedora install yet, so please report any issues you hit.
+- **Fedora/RHEL-family (dnf) support.** The script auto-detects `apt-get` vs `dnf` and
+  translates package names where they differ. Most of the tools that aren't packaged
+  for Fedora at all (beef-xss, msfpc, metasploit-framework, websploit, shellter) now get
+  a real install path instead (git clone + build, the official Rapid7 installer, Wine,
+  etc. - whatever each project's own docs recommend). OpenVAS/Greenbone genuinely has no
+  safe way to automate on Fedora (upstream only supports Docker Compose or a source
+  build), so that one just points you at Greenbone's own docs. None of this has been
+  tested on a real Fedora install yet - please report any issues you hit.
+- **KDE support (`konsole`).** lscript used to hard-depend on `gnome-terminal` for every
+  pop-up window (deauth helper, handshake capture, etc.). It now also supports `konsole`,
+  falling back further to `xterm` if neither GNOME nor KDE's terminal is present, and
+  `install.sh` only pulls in `gnome-terminal` if the system has none of the three already.
 
 None of this changes how you use the script day to day - it's the same menus and
 keyboard shortcuts as before. The `ip`/`iw` migration was reviewed line by line and
