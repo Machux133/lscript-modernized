@@ -109,7 +109,7 @@ function local_ips()
 	iffile="${LPATH}/iftemp.txt"
 	#passing an interface if any
 	LF="$1"
-	GREPP=$(ifconfig)
+	GREPP=$(ip addr)
 	if [[ "$LF" = "" ]]
 	then
 		echo -e """$BS""Local IPs""$CE"": "
@@ -117,8 +117,8 @@ function local_ips()
 		n=0
 		if [[ $TEST != "" ]]
 		then
-			ifconfig "$ETH" > $iffile
-			LOCALETH=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+			ip addr show "$ETH" > $iffile
+			LOCALETH=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 			cho=$(is_it_an_ip "$LOCALETH")
 			if [[ "$cho" = 1 ]]
 			then
@@ -129,8 +129,8 @@ function local_ips()
 		TEST=$(echo "$GREPP" | grep "$WLANN:")
 		if [[ $TEST != "" ]]
 		then
-			ifconfig "$WLANN" > $iffile
-			LOCALMA=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+			ip addr show "$WLANN" > $iffile
+			LOCALMA=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 			cho=$(is_it_an_ip "$LOCALMA")
 			if [[ "$cho" = 1 ]]
 			then
@@ -141,8 +141,8 @@ function local_ips()
 		TEST=$(echo "$GREPP" | grep "$WLANNM:")
 		if [[ $TEST != "" ]]
 		then
-			ifconfig "$WLANNM" > $iffile
-			LOCALMO=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+			ip addr show "$WLANNM" > $iffile
+			LOCALMO=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 			cho=$(is_it_an_ip "$LOCALMO")
 			if [[ "$cho" = 1 ]]
 			then
@@ -160,8 +160,8 @@ function local_ips()
 		TEST=$(echo "$GREPP" | grep "$LF:")
 		if [[ $TEST != "" ]]
 		then
-			ifconfig "$LF" > $iffile
-			LOCALM=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+			ip addr show "$LF" > $iffile
+			LOCALM=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 			cho=$(is_it_an_ip "$LOCALM")
 			if [[ "$cho" = 1 ]]
 			then
@@ -266,10 +266,10 @@ function monitor_spaces
 function check_wlans
 {
 	CC=$WLANN
-	WLANCHECKING=$(ifconfig | grep "$WLANN" )
+	WLANCHECKING=$(ip addr | grep "$WLANN" )
 	#~ WLANCHECKING=$(ifconfig | awk -v c1="$CC" '$0 ~ c1 {print}')
 	CC=$WLANNM
-	WLANMCHECKING=$(ifconfig | grep "$WLANNM" )
+	WLANMCHECKING=$(ip addr | grep "$WLANNM" )
 	#~ WLANMCHECKING=$(ifconfig | awk -v c1="$CC" '$0 ~ c1 {print}')
 }
 function banner
@@ -336,13 +336,13 @@ function enable_wlan
 	O4=0
 	echo -e "Enabling $WLANN..."
 	rfkill unblock wifi &> /dev/null; rfkill unblock all &> /dev/null
-	ifconfig "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1  || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
+	ip link set "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1  || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
 }
 function disable_wlan
 {
 	echo -e "Disabling $WLANN..."
 	rfkill unblock wifi &> /dev/null; rfkill unblock all &> /dev/null
-	ifconfig "$WLANN" down &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1 || echo -e """$RS""Error. I can't find your wireless adapter.""$CE"""
+	ip link set "$WLANN" down &>/dev/null && echo -e """$YS""Done""$CE""" && O4=1 || echo -e """$RS""Error. I can't find your wireless adapter.""$CE"""
 }
 function interface_selection
 {
@@ -414,17 +414,17 @@ function change_mac
 		if [[ "$RORS" != "s" ]]
 		then
 			echo -e "Changing mac address of $MYINT to a random one..."
-			ifconfig "$MYINT" down
+			ip link set "$MYINT" down
 			macchanger -r "$MYINT"
-			ifconfig "$MYINT" up
+			ip link set "$MYINT" up
 			echo -e "Done."
 		else
 			echo -e "Enter the MAC you want:"
 			read -e SMAC
 			echo -e "Changing mac address of $MYINT to $SMAC..."
-			ifconfig "$MYINT" down
+			ip link set "$MYINT" down
 			macchanger -m "$SMAC" "$MYINT"
-			ifconfig "$MYINT" up
+			ip link set "$MYINT" up
 			echo -e "Done."
 		fi
 	fi
@@ -6526,7 +6526,7 @@ function public_ip
 {
 	clear
 	echo -e """$BS""Please wait...""$CE"""
-	CHECKMON=$(ifconfig | grep "mon")
+	CHECKMON=$(ip addr | grep "mon")
 	if [[ "$CHECKMON" = "" ]]
 	then
 		clear
@@ -6646,9 +6646,9 @@ function start_menu
 	echo -e "Starting monitor mode..."
 	if [[ "$ALFA" = "yes" ]]
 	then
-		ifconfig "$WLANN" down
-		iwconfig "$WLANN" mode monitor &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
-		ifconfig "$WLANN" up
+		ip link set "$WLANN" down
+		iw dev "$WLANN" set type monitor &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
+		ip link set "$WLANN" up
 	else
 		airmon-ng start "$WLANN" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE""" && O2=1
 	fi
@@ -6659,9 +6659,9 @@ function start_menu
 		STARTMAC="$DEFMAC"
 	fi
 	echo -e "Changing mac address of $WLANNM to ""$STARTMAC""..."
-	ifconfig "$WLANNM" down
+	ip link set "$WLANNM" down
 	macchanger -m "$STARTMAC" "$WLANNM" | grep "New MAC:" &> /dev/null && O3=1
-	ifconfig "$WLANNM" up && echo -e """$YS""Done""$CE""" 
+	ip link set "$WLANNM" up && echo -e """$YS""Done""$CE""" 
 	if [[ "$O1" = 1 && "$O2" = 1 && "$O3" = 1 && "$O4" = 1 ]]
 	then
 		BACKL=1
@@ -6674,9 +6674,9 @@ function stop_menu
 	O3=0
 	stop_monitor
 	echo -e "Changing mac address of $WLANN to the original one..."
-	ifconfig "$WLANN" down
+	ip link set "$WLANN" down
 	macchanger -p "$WLANN" | grep "Current MAC:" && O1=1
-	ifconfig "$WLANN" up
+	ip link set "$WLANN" up
 	echo -e """$YS""Done""$CE"""
 	if [[ "$O1" = 1 && "$O2" = 1 && "$O3" = 1 ]]
 	then
@@ -6692,9 +6692,9 @@ function stop_monitor
 		A1=0
 		A2=0
 		A3=0
-		ifconfig "$WLANN" down && A1=1
-		iwconfig "$WLANN" mode managed && A2=1
-		ifconfig "$WLANN" up && A3=1
+		ip link set "$WLANN" down && A1=1
+		iw dev "$WLANN" set type managed && A2=1
+		ip link set "$WLANN" up && A3=1
 		if [[ "$A1" = 1 && "$A2" = 1 && "$A3" = 1 ]]
 		then
 			echo -e """$YS""Done""$CE""" && O2=1
@@ -6841,9 +6841,9 @@ function new_terminal
 	clear
 	if [[ "$ALFA" = "yes" ]]
 	then
-		CHECKMON=$(iwconfig "$WLANN" | grep "Mode:Monitor")
+		CHECKMON=$(iw dev "$WLANN" info 2>/dev/null | grep "type monitor")
 	else
-		CHECKMON=$(ifconfig | grep "$WLANNM")
+		CHECKMON=$(ip addr | grep "$WLANNM")
 	fi
 	clear
 	if [[ "$CHECKMON" = "" ]]
@@ -6861,7 +6861,7 @@ function new_terminal
 			clear
 			exec bash "$0"
 		else
-			CHECKWL=$(ifconfig | grep "$WLANN")
+			CHECKWL=$(ip addr | grep "$WLANN")
 			if [[ "$CHECKWL" == "" ]]
 			then
 				echo -e """$RS""""$WLANN"" was not found""$CE"""
@@ -7692,7 +7692,7 @@ function mitmf_hook
 	printf '\033]2;MITMF + BEEF\a'
 	if [[ -d /root/MITMf ]]
 	then
-		TEST=$(ifconfig | grep "$ETH")
+		TEST=$(ip addr | grep "$ETH")
 		n=1
 		echo -e """$BS""Available interfaces""$CE"": "
 		if [[ "$TEST" != "" ]]
@@ -7701,14 +7701,14 @@ function mitmf_hook
 			in[$n]="$ETH"
 			n=$((n+1))
 		fi
-		TEST=$(ifconfig | grep "$WLANN")
+		TEST=$(ip addr | grep "$WLANN")
 		if [[ "$TEST" != "" ]]
 		then
 			echo -e """$YS""$n""$CE"") $WLANN"
 			in[$n]="$WLANN"
 			n=$((n+1))
 		fi
-		TEST=$(ifconfig | grep "$WLANNM")
+		TEST=$(ip addr | grep "$WLANNM")
 		if [[ "$TEST" != "" ]]
 		then
 			echo -e """$YS""$n""$CE"") $WLANNM"
@@ -7728,12 +7728,12 @@ function mitmf_hook
 			clear
 			echo -e "Target's IP: "
 			read mitmftar
-			TEST=$(ifconfig | grep "$mitmfint")
+			TEST=$(ip addr | grep "$mitmfint")
 			if [[ $TEST != "" ]]
 			then
 				iffile="${LPATH}/iftemp.txt"
-				ifconfig "$mitmfint" > $iffile
-				mitmflocalip=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+				ip addr show "$mitmfint" > $iffile
+				mitmflocalip=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 			fi
 			clear
 			echo -e "hook.js URL path(""$YS""Enter""$CE""=http://""$mitmflocalip"":3000/hook.js): "
@@ -7773,7 +7773,7 @@ do
 	printf '\033]2;BRUTEFORCE LOGIN\a'
 	if [[ "$BI" = "" ]]
 	then
-		TT=$(ifconfig | grep "$WLANN")
+		TT=$(ip addr | grep "$WLANN")
 		if [[ "$TT" = "" ]]
 		then
 			bin=0
@@ -7923,7 +7923,7 @@ do
 			sleep 3
 			continue
 		fi
-		TT=$(ifconfig | grep "$BI")
+		TT=$(ip addr | grep "$BI")
 		if [[ "$TT" = "" ]]
 		then
 			echo -e """$RS""""$BI"" is not available""$CE"""
@@ -7964,7 +7964,7 @@ do
 			sleep 2
 			continue
 		fi
-		TT=$(ifconfig | grep "$BI")
+		TT=$(ip addr | grep "$BI")
 		if [[ "$TT" = "" ]]
 		then
 			echo -e """$RS""""$BI"" is not available""$CE"""
@@ -8035,7 +8035,7 @@ function find_gateways()
 	then
 		echo -e """$BS""Gateways""$CE"": "
 		n=0
-		ethr=$(ifconfig | grep "$ETH")
+		ethr=$(ip addr | grep "$ETH")
 		if [[ "$ethr" != "" ]]
 		then
 			ethd=$(route -n | awk -v int1="$ETH" '{if(int1~$8 && $2!="IP" && $2!="0.0.0.0"){print $2}}')
@@ -8046,7 +8046,7 @@ function find_gateways()
 				n=1
 			fi
 		fi
-		wlanr=$(ifconfig | grep "$WLANN")
+		wlanr=$(ip addr | grep "$WLANN")
 		if [[ "$wlanr" != "" ]]
 		then
 			wland=$(route -n | awk -v int1="$WLANN" '{if(int1~$8 && $2!="IP" && $2!="0.0.0.0"){print $2}}')
@@ -8057,7 +8057,7 @@ function find_gateways()
 				n=1
 			fi
 		fi
-		wlanmr=$(ifconfig | grep "$WLANNM")
+		wlanmr=$(ip addr | grep "$WLANNM")
 		if [[ "$wlanmr" != "" ]]
 		then
 			wlanmd=$(route -n | awk -v int1="$WLANNM" '{if(int1~$8 && $2!="IP" && $2!="0.0.0.0"){print $2}}')
@@ -8075,7 +8075,7 @@ function find_gateways()
 	else
 		if [[ "$FG2" = "interface" ]]
 		then
-			inttos=$(ifconfig | grep "$FG1")
+			inttos=$(ip addr | grep "$FG1")
 			if [[ "$inttos" != "" ]]
 			then
 				gate=$(route -n | awk -v int1="$FG1" '{if(int1~$8 && $2!="IP" && $2!="0.0.0.0"){print $2}}')
@@ -8089,7 +8089,7 @@ function find_gateways()
 			fi
 		#~ elif [[ "$FG2" = "ip" ]]
 		#~ then
-			#~ iptos=$(ifconfig | grep "$FG1")
+			#~ iptos=$(ip addr | grep "$FG1")
 			#~ if [[ "$iptos" != "" ]]
 			#~ then
 				#~ dot=$(give_ip_take_zero "$FG1" "dot")
@@ -8117,14 +8117,14 @@ function select_interface
 		TERMINALTITLE="Select interface"
 		dash_calc
 		printf '\033]2;SELECT INTERFACE\a'
-		TT=$(ifconfig | grep "$WLANN:")
+		TT=$(ip addr | grep "$WLANN:")
 		if [[ "$TT" != "" ]]
 		then
 			echo -e """$YS"" 1""$CE"") ""$WLANN"""
 		else
 			echo -e """$RS"" 1""$CE"") ""$RS""""$WLANN""""$CE"""
 		fi
-		TT=$(ifconfig | grep "$ETH:")
+		TT=$(ip addr | grep "$ETH:")
 		if [[ "$TT" != "" ]]
 		then
 			echo -e """$YS"" 2""$CE"") ""$ETH"""
@@ -8137,7 +8137,7 @@ function select_interface
 		read CI
 		if [[ "$CI" = 1 ]]
 		then
-			TT=$(ifconfig | grep "$WLANN:")
+			TT=$(ip addr | grep "$WLANN:")
 			if [[ "$TT" != "" ]]
 			then
 				SINT="$WLANN"
@@ -8153,7 +8153,7 @@ function select_interface
 			fi
 		elif [[ "$CI" = 2 ]]
 		then
-			TT=$(ifconfig | grep "$ETH:")
+			TT=$(ip addr | grep "$ETH:")
 			if [[ "$TT" != "" ]]
 			then
 				SINT="$ETH"
@@ -8171,7 +8171,7 @@ function select_interface
 		then
 			echo -e "Interface to use: "
 			read ITU
-			TT=$(ifconfig | grep "$ITU:")
+			TT=$(ip addr | grep "$ITU:")
 			if [[ "$TT" != "" ]]
 			then
 				SINT="$ITU"
@@ -8631,13 +8631,13 @@ function browser_exploiting
 		printf '\033]2;AUTO-EXPLOIT BROWSER\a'
 		if [[ "$SINT" = "" ]]
 		then
-			WL=$(ifconfig | grep "$WLANN:")
+			WL=$(ip addr | grep "$WLANN:")
 			if [[ "$WL" != "" ]]
 			then
 				SINT="$WLANN"
 				inter=0
 			else
-				EL=$(ifconfig | grep "$ETH:")
+				EL=$(ip addr | grep "$ETH:")
 				if [[ "$EL" != "" ]]
 				then
 					SINT="$ETH"
@@ -8853,12 +8853,12 @@ function browser_exploiting
 						then
 							export mitmfgate
 							clear
-							TEST=$(ifconfig | grep "$mitmfint")
+							TEST=$(ip addr | grep "$mitmfint")
 							if [[ $TEST != "" ]]
 							then
 								iffile="${LPATH}/iftemp.txt"
-								ifconfig "$mitmfint" > $iffile
-								mitmflocalip=$(cat $iffile | grep " inet " | awk -F "inet " '{print $2}' | cut -d ' ' -f1)
+								ip addr show "$mitmfint" > $iffile
+								mitmflocalip=$(cat $iffile | awk '/inet /{print $2}' | cut -d '/' -f1)
 							else
 								echo -e """$RS""ERROR 5. Could not find your local IP. Make sure you are connected to a network on interface ""$SINT""""$CE"""
 								echo -e "$PAKTGB"
@@ -8995,7 +8995,7 @@ function settings_menu
 			clear
 			echo -e """$BS""Interface to be used for iftop: ""$CE"""
 			read IFTOP
-			IFTOPTEST=$(ifconfig | grep "$IFTOP")
+			IFTOPTEST=$(ip addr | grep "$IFTOP")
 			if [[ "$IFTOPTEST" = "" ]]
 			then
 				echo -e """$RS""""$IFTOP"" is not currently available.""$CE"""
@@ -9013,7 +9013,7 @@ function settings_menu
 			clear
 			echo -e """$BS""Interface to be used for arp-scan: ""$CE"""
 			read ARPIN
-			ARPINTEST=$(ifconfig | grep "$ARPIN")
+			ARPINTEST=$(ip addr | grep "$ARPIN")
 			if [[ "$ARPINTEST" = "" ]]
 			then
 				echo -e """$RS""""$ARPIN"" is not currently available.""$CE"""
@@ -9241,7 +9241,7 @@ function main_options
 		exit
 	elif [[ "$YORNAA" = "gate" || "$YORNAA" = "gateway" ]]
 	then
-		TT=$(ifconfig | grep "$WLANN")
+		TT=$(ip addr | grep "$WLANN")
 		if [[ "$TT" = "" ]]
 		then
 			echo -e """$RS""""$WLANN"" is not available""$CE"""
@@ -9280,7 +9280,7 @@ function main_options
 		then
 			ARPIN="$WLANN"
 		fi
-		TESTARP=$(ifconfig | grep "$ARPIN")
+		TESTARP=$(ip addr | grep "$ARPIN")
 		if [[ "$TESTARP" = "" ]]
 		then
 			clear
@@ -9297,7 +9297,7 @@ function main_options
 		then
 			apt-get -y install iftop
 		fi
-		CHECK=$(ifconfig | grep "$iftopint")
+		CHECK=$(ip addr | grep "$iftopint")
 		if [[ "$CHECK" = "" ]]
 		then
 			echo -e """$RS""Interface ""$iftopint"" was not found"
@@ -9493,9 +9493,9 @@ function main_options
 		interface_selection
 		clear
 		echo -e "Changing mac address of $MYINT to the original one..."
-		ifconfig "$MYINT" down
+		ip link set "$MYINT" down
 		macchanger -p "$MYINT"
-		ifconfig "$MYINT" up
+		ip link set "$MYINT" up
 		echo -e "Done."
 	elif [[ "$YORNAA" = "4" ]]
 	then
@@ -9634,7 +9634,7 @@ function main_options
 		update_lscript
 	elif [[ "$YORNAA" = "if" || "$YORNAA" = "ifconfig" ]]
 	then
-		ifconfig
+		ip addr
 	elif [[ "$YORNAA" = "changelog" ]]
 	then
 		clear

@@ -26,7 +26,7 @@ do
 		read
 		echo -e "Getting you MAC...."
 		sleep 1
-		MYMAC=$(ifconfig "$WLANNM" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+		MYMAC=$(ip link show "$WLANNM" | awk '/link\/ether/ {print $2; exit}')
 		echo -e "Your MAC is $MYMAC"
 		sleep 1
 		echo -e "Starting packet injection..."

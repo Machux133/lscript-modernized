@@ -44,7 +44,7 @@ function enable2_wlan
 {
 	echo -e "Enabling $WLANN..."
 	rfkill unblock wifi &> /dev/null; rfkill unblock all &> /dev/null
-	ifconfig "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
+	ip link set "$WLANN" up &>/dev/null && echo -e """$YS""Done""$CE""" || echo -e """$RS""Error. I can't find your wireless adapter""$CE"""
 }
 function start2_menu
 {
@@ -55,24 +55,24 @@ function start2_menu
 	echo -e "Starting monitor mode..."
 	if [[ "$ALFA" = "yes" ]]
 	then
-		ifconfig "$WLANN" down
-		iwconfig "$WLANN" mode monitor &> /dev/null && echo -e """$YS""Done""$CE"""
-		ifconfig "$WLANN" up
+		ip link set "$WLANN" down
+		iw dev "$WLANN" set type monitor &> /dev/null && echo -e """$YS""Done""$CE"""
+		ip link set "$WLANN" up
 	else
 		airmon-ng start "$WLANN" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE"""
 	fi
 	echo -e "Changing mac address of $WLANNM to 00:11:22:33:44:55..."
-	ifconfig "$WLANNM" down
+	ip link set "$WLANNM" down
 	macchanger -m 00:11:22:33:44:55 "$WLANNM" | grep "New MAC:" &> /dev/null
-	ifconfig "$WLANNM" up && echo -e """$YS""Done""$CE""" 
+	ip link set "$WLANNM" up && echo -e """$YS""Done""$CE""" 
 }
 function stop2_menu
 {
 	stop2_monitor
 	echo -e "Changing mac address of $WLANN to the original one..."
-	ifconfig "$WLANN" down
+	ip link set "$WLANN" down
 	macchanger -p "$WLANN" | grep "Current MAC:"
-	ifconfig "$WLANN" up
+	ip link set "$WLANN" up
 	echo -e """$YS""Done""$CE"""
 }
 function stop2_monitor
@@ -84,9 +84,9 @@ function stop2_monitor
 		A1=0
 		A2=0
 		A3=0
-		ifconfig "$WLANN" down && A1=1
-		iwconfig "$WLANN" mode managed && A2=1
-		ifconfig "$WLANN" up && A3=1
+		ip link set "$WLANN" down && A1=1
+		iw dev "$WLANN" set type managed && A2=1
+		ip link set "$WLANN" up && A3=1
 		if [[ "$A1" = 1 && "$A2" = 1 && "$A3" = 1 ]]
 		then
 			echo -e """$YS""Done""$CE"""
@@ -444,7 +444,7 @@ do
 			then
 				echo -e "New interface: "
 				read NII
-				TEST3=$(ifconfig | grep "$NII")
+				TEST3=$(ip link show "$NII" 2>/dev/null)
 				if [[ "$TEST3" = "" ]]
 				then
 					echo -e """$RS""Could not find this interface on your system""$CE"""
@@ -453,12 +453,12 @@ do
 					echo -e """$BS""Interface found!""$CE"""
 					sleep 2
 					clear
-					checkmonitor=$(iwconfig "$NII" | grep "Mode:Monitor")
+					checkmonitor=$(iw dev "$NII" info 2>/dev/null | grep "type monitor")
 					if [[ "$checkmonitor" = "" ]]
 					then
 						echo -e """$BS""Enabling monitor mode for ""$NII""..."
 						airmon-ng start "$NII" | grep "monitor mode" | awk -F "(" '{print $2}' | cut -d ')' -f1 &> /dev/null && echo -e """$YS""Done""$CE"""
-						checkmonitor=$(iwconfig "$NII"mon | grep "Mode:Monitor")
+						checkmonitor=$(iw dev "$NII"mon info 2>/dev/null | grep "type monitor")
 						if [[ "$checkmonitor" = "" ]]
 						then
 							echo -e """$RS""Couldn't start monitor mode""$CE"""
