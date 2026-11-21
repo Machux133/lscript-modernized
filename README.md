@@ -58,12 +58,16 @@ with current tooling, without changing the menus or workflow you already know:
   a real install path instead (git clone + build, the official Rapid7 installer, Wine,
   etc. - whatever each project's own docs recommend). OpenVAS/Greenbone genuinely has no
   safe way to automate on Fedora (upstream only supports Docker Compose or a source
-  build), so that one just points you at Greenbone's own docs. None of this has been
-  tested on a real Fedora install yet - please report any issues you hit.
+  build), so that one just points you at Greenbone's own docs. `bcrypt` was confirmed
+  live on Fedora 44 - `dnf install bcrypt` pulls a build with encryption fully enabled,
+  unlike Debian's decrypt-only one. The rest of the package-manager work is still
+  untested on a real install - please report any issues you hit.
 - **KDE support (`konsole`).** lscript used to hard-depend on `gnome-terminal` for every
-  pop-up window (deauth helper, handshake capture, etc.). It now also supports `konsole`,
-  falling back further to `xterm` if neither GNOME nor KDE's terminal is present, and
-  `install.sh` only pulls in `gnome-terminal` if the system has none of the three already.
+  pop-up window (deauth helper, handshake capture, etc.). It now also supports `konsole`
+  (confirmed working live on KDE Plasma/Fedora 44 - opens, runs a compound shell command
+  correctly, closes itself when done), falling back further to `xterm` if neither GNOME
+  nor KDE's terminal is present. `install.sh` only pulls in `gnome-terminal` if the
+  system has none of the three already.
 
 None of this changes how you use the script day to day - it's the same menus and
 keyboard shortcuts as before. The `ip`/`iw` migration was reviewed line by line and
