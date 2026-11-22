@@ -1059,7 +1059,7 @@ then
 		then
 			stop2_menu
 			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
-			read ENT
+			read -r || exit 0
 			install_bully
 			start2_menu
 		fi
@@ -1078,7 +1078,7 @@ then
 		then
 			stop2_menu
 			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
-			read ENT
+			read -r || exit 0
 			install_bully
 			start2_menu
 		fi
@@ -1097,7 +1097,7 @@ then
 		then
 			stop2_menu
 			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
-			read ENT
+			read -r || exit 0
 			install_wifiautopwner
 			start2_menu
 		fi
@@ -1116,7 +1116,7 @@ then
 		then
 			stop2_menu
 			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
-			read ENT
+			read -r || exit 0
 			install_airgeddon
 			start2_menu
 		fi
@@ -1134,7 +1134,7 @@ then
 		then
 			stop2_menu
 			echo -e "Press ""$YS""enter""$CE"" when connected to a network"
-			read ENT
+			read -r || exit 0
 			install_vmr
 			start2_menu
 		fi

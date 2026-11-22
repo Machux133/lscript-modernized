@@ -4,8 +4,6 @@
 # These four are read from functions that now live in lib/*.sh (ShellCheck's
 # cross-file analysis doesn't trace a var set here and read in a sourced
 # file in this direction, even with the source= directives below).
-# shellcheck disable=SC2034
-VERSION=2.1.5
 #Number of tools with keyboard shortcut support
 # shellcheck disable=SC2034
 HOWMANYTOOLS=53
@@ -41,6 +39,8 @@ source /root/lscript/lib/wifi-attacks.sh
 source /root/lscript/lib/mitm-and-web.sh
 # shellcheck source=lib/recon-and-exploit.sh
 source /root/lscript/lib/recon-and-exploit.sh
+# shellcheck disable=SC2034 # Used by the banner and version information.
+VERSION=$(installed_version /root/lscript/version.txt)
 detect_pkgmgr
 cd || exit
 # shellcheck disable=SC2154 # wififb is assigned in core-utils.sh's defaults_l, read further below
@@ -435,8 +435,7 @@ function main_options
 		bruteforce_router
 	elif [[ "$YORNAA" = "exit" ]]
 	then
-		kill -9 $PPID
-		exit
+		exit 0
 	elif [[ "$YORNAA" = "update" ]]
 	then
 		printf '\033]2;UPDATE\a'
@@ -532,17 +531,13 @@ fi
 if [[ -f "${LPATH}/IAGREE.txt" ]]
 then
 
-	if [[ ! -f "${LPATH}/wlan.txt" ]]
+	if [[ ! -f "$LPATH/wlan.txt" || ! -f "$LPATH/wlanmon.txt" || ! -f "$LPATH/eth.txt" ]]
 	then
 		set_interface_number
-	fi
-	if [[ ! -f "${LPATH}/wlanmon.txt" ]]
-	then
-		set_interface_number
-	fi
-	if [[ ! -f "${LPATH}/eth.txt" ]]
-	then
-		set_interface_number
+		case $? in
+			1) exit 0 ;;
+			2) exit 1 ;;
+		esac
 	fi
 	clear
 	WLANNM=$(cat "$LPATH"/wlanmon.txt)
@@ -566,7 +561,7 @@ then
 		echo -e "1" > "$LPATH"/latestchangelog.txt
 		latest_changelog
 	fi		
-	banner
+	banner || exit 0
 	main_options
 	if [[ "$BACKL" = "1" ]]
 	then
@@ -574,7 +569,7 @@ then
 		
 	else
 		echo -e "$PAKTGB"
-		$READAK
+		$READAK || exit 0
 		exec bash "$0"
 	fi
 else

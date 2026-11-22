@@ -187,6 +187,27 @@ View your MAC faster
 	SQLmap automated
 	+more
 		
+## Fedora 44 and 45 compatibility
+
+The project has partial Fedora support through DNF and Konsole. The
+maintenance tests have passed locally on Fedora 44 and can be run with
+`bash tests/maintenance.sh` without root or network access. CI is configured
+to run those tests and check Bash syntax on Fedora 44 and 45. Fedora 45
+results and end-to-end installation and menu behavior remain unverified.
+
+- The installer still assumes a root-owned `/root/lscript` and a desktop
+  terminal. If an installation already exists there, running the installer
+  from another directory exits before replacing it. Back up your settings
+  before updating an existing installation.
+- The Apache diagnostic reads the status of `httpd.service` on Fedora.
+  The APT troubleshooting entry applies to APT-based distributions.
+- The `update` command displays the installed version. Before replacing
+  program files, back up `/root/lscript`, which holds settings, shortcuts
+  and saved interface selections. The uninstaller preserves that directory.
+- The remaining Python 2 integrations are legacy and are outside the
+  verified Fedora support. The diagnostics menu no longer installs the
+  old Scapy release or removes the system-wide Python 2 Crypto directory.
+
 # How to install (Kali Linux)
 (make sure you are a root user)
 

@@ -12,6 +12,35 @@ function no_uninstall
 	exit 0
 }
 
+function remove_installation_files
+{
+	local bin_dir="$1" bashrc="$2"
+	if [[ -L "$bin_dir" || -L "$bashrc" ]]
+	then
+		printf 'Uninstall stopped: %s or %s is a symbolic link.\n' "$bin_dir" "$bashrc" >&2
+		return 1
+	fi
+	if [[ -d "$bin_dir" ]]
+	then
+		rm -f -- "$bin_dir"/{l,handshake-menu,deauth-menu,deauth-autocheck,wps-menu,wep-menu} || return 1
+		rmdir --ignore-fail-on-non-empty -- "$bin_dir" || return 1
+		if [[ -d "$bin_dir" ]]
+		then
+			printf 'Other files under %s were preserved.\n' "$bin_dir"
+		fi
+	fi
+	if [[ -f "$bashrc" ]] && grep -qxF 'export PATH=/bin/lscript:$PATH' "$bashrc"
+	then
+		sed -i '/^export PATH=\/bin\/lscript:\$PATH$/d' "$bashrc" || return 1
+		printf 'Removed lscript from PATH in %s\n' "$bashrc"
+	fi
+}
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]
+then
+	return 0
+fi
+
 if [[ "$EUID" -ne 0 ]]
 then
 	echo -e "This script needs to be run as root (e.g. with sudo).\nAborting."
@@ -27,28 +56,12 @@ then
 	read -r CHCHUN
 	if [[ "$CHCHUN" = "y" ]]
 	then
-		echo -e "Ok, uninstalling everything that has to do with lscript on your system"
+		echo -e "Removing the installed launcher and helper commands"
 		sleep 4
 
-		if [[ -d /bin/lscript ]]
-		then
-			rm -rf /bin/lscript
-			echo -e "Removed /bin/lscript"
-		fi
+		remove_installation_files /bin/lscript ~/.bashrc || exit 1
 
-		if [[ -f ~/.bashrc ]] && grep -qF "/bin/lscript" ~/.bashrc
-		then
-			sed -i '/export PATH=\/bin\/lscript:\$PATH/d' ~/.bashrc
-			echo -e "Removed lscript from PATH in ~/.bashrc"
-		fi
-
-		echo -e "Do you also want to delete the /root/lscript source folder?(y/n)(Enter=no): "
-		read -r CHSRC
-		if [[ "$CHSRC" = "y" && -d /root/lscript ]]
-		then
-			rm -rf /root/lscript
-			echo -e "Removed /root/lscript"
-		fi
+		printf '%s\n' 'Source files and settings under /root/lscript were preserved.'
 
 		echo -e "Done."
 		sleep 1

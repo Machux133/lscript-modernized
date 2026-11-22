@@ -9,22 +9,37 @@ on:
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          severity: warning
-          check_together: 'yes'
-          # Most scripts in this repo have no file extension, so they need
-          # to be listed explicitly for ShellCheck to pick them up.
-          additional_files: 'l handshake-menu deauth-menu deauth-autocheck wps-menu wep-menu install.sh uninstall.sh mitm-helpers/dns2proxy.sh mitm-helpers/arpspoof-poison-target.sh mitm-helpers/arpspoof-poison-gateway.sh'
-          # lib/*.sh are only ever sourced from `l` (never run standalone) and
-          # are already analyzed as part of checking `l`, via the `# shellcheck
-          # source=` directives at the top of that file. Scanning them again
-          # here too would make ShellCheck treat each one as its own separate
-          # entry point, losing all cross-file context (every variable one
-          # function sets for another to read looks "unused"/"unassigned"),
-          # which is pure noise, not a real finding.
-          ignore_paths: 'lib'
+        # Follow source directives so libraries are checked in caller context.
+        run: shellcheck -x -S warning l ./*-menu deauth-autocheck install.sh uninstall.sh mitm-helpers/*.sh tests/*.sh
+
+  fedora-maintenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        fedora: ['44', '45']
+    container: registry.fedoraproject.org/fedora:${{ matrix.fedora }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Bash syntax
+        shell: bash
+        run: |
+          for script in l install.sh uninstall.sh ./*-menu deauth-autocheck lib/*.sh mitm-helpers/*.sh tests/*.sh; do
+            bash -n "$script"
+          done
+
+      - name: Test maintenance commands offline
+        shell: bash
+        run: bash tests/maintenance.sh

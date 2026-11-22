@@ -1,11 +1,11 @@
 #!/bin/bash
 # This file is sourced by `l`, not run directly. It holds lscript's
 # apt/dnf package-manager abstraction and the gnome-terminal/konsole/
-# xterm terminal-emulator abstraction (pkg_install, pkg_remove,
-# pkg_autoremove, detect_pkgmgr, open_terminal).
+# xterm terminal-emulator abstraction (pkg_install, detect_pkgmgr,
+# open_terminal).
 #############PACKAGE MANAGER ABSTRACTION###############
-#lscript was written for apt-get (Debian/Kali/Parrot). These three
-#functions let the rest of the script also run on dnf-based systems
+#lscript was written for apt-get (Debian/Kali/Parrot). These functions
+#let the rest of the script also run on dnf-based systems
 #(Fedora/RHEL-family) without having to special-case every call site.
 function detect_pkgmgr
 {
@@ -69,40 +69,6 @@ function pkg_install
 		apt-get -y install "${apt_pkgs[@]}"
 	else
 		echo -e """$RS""No supported package manager (apt-get/dnf) found. Install manually: ${apt_pkgs[*]}""$CE"""
-	fi
-}
-function pkg_remove
-{
-	#usage: pkg_remove <apt-package-name> [<apt-package-name> ...]
-	local apt_pkgs=("$@")
-	if [[ "$PKGMGR" = "dnf" ]]
-	then
-		local dnf_pkgs=()
-		local p
-		for p in "${apt_pkgs[@]}"
-		do
-			case "$p" in
-				nginx-full|nginx-common) ;;
-				*) dnf_pkgs+=("$p") ;;
-			esac
-		done
-		if [[ "${#dnf_pkgs[@]}" -gt 0 ]]
-		then
-			dnf -y remove "${dnf_pkgs[@]}"
-		fi
-	elif [[ "$PKGMGR" = "apt" ]]
-	then
-		apt-get -y remove "${apt_pkgs[@]}"
-	fi
-}
-function pkg_autoremove
-{
-	if [[ "$PKGMGR" = "dnf" ]]
-	then
-		dnf -y autoremove
-	elif [[ "$PKGMGR" = "apt" ]]
-	then
-		apt-get -y autoremove
 	fi
 }
 #############TERMINAL EMULATOR ABSTRACTION###############

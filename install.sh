@@ -78,8 +78,29 @@ function pkg_install
 	fi
 }
 
+DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
+if [[ "$DIR" != "/root/lscript" && ( -e /root/lscript || -L /root/lscript ) ]]
+then
+	printf '%s\n' 'Installation stopped: /root/lscript already exists. Back up the existing installation and its settings before replacing it.' >&2
+	exit 1
+fi
+
+if [[ -L /bin/lscript || -L ~/.bashrc ]]
+then
+	printf '%s\n' 'Installation stopped: /bin/lscript or ~/.bashrc is a symbolic link.' >&2
+	exit 1
+fi
+for f in "${LSCRIPT_BIN_FILES[@]}"
+do
+	if [[ -L "/bin/lscript/$f" ]]
+	then
+		printf 'Installation stopped: %s is a symbolic link.\n' "/bin/lscript/$f" >&2
+		exit 1
+	fi
+done
+
 echo -e "Press \e[1;33many key\e[0m to install the script..."
-read -n 1 -r
+read -n 1 -r || exit 1
 clear
 #only install gnome-terminal if this system has no terminal emulator
 #open_terminal can already use (konsole/xterm on KDE, for instance)
@@ -89,16 +110,11 @@ then
 fi
 clear
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ "$DIR" != "/root/lscript" ]]
 then
 	echo -e "You didn't follow the github's simple install instructions. I will try to do it for you..."
 	sleep 4
-	if [[ -d /root/lscript ]]
-	then
-		rm -rf /root/lscript
-	fi
-	mkdir -p /root/lscript
+	mkdir -- /root/lscript || exit 1
 	cp -r "$DIR"/* /root/lscript
 	chmod +x /root/lscript/install.sh
 	open_terminal "bash /root/lscript/install.sh"
@@ -169,7 +185,7 @@ do
 	clear
 	echo -e "Are you \e[1;33mu\e[0mpdating or \e[1;33mi\e[0mnstalling the script?(\e[1;33mu\e[0m/\e[1;33mi\e[0m): "
 	echo -e "Only use 'i' for the first time."
-	read -r UORI
+	read -r UORI || exit 1
 	if [[ "$UORI" = "u" ]]
 	then
 		clear

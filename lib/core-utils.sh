@@ -4,6 +4,17 @@
 # validation, interface spacing, the one-time changelog display,
 # and lscript's own global defaults (defaults_l).
 
+function installed_version
+{
+	local version
+	if [[ -r "$1" ]] && read -r version < "$1" && [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+	then
+		printf '%s\n' "$version"
+	else
+		printf '%s\n' 'unknown'
+	fi
+}
+
 function defaults_l
 {
 #path for lscript
@@ -291,12 +302,12 @@ function banner
 		echo -e """$YS"" 1""$CE"") Enable $WLANN${SPACESN}""$YS""d1""$CE"") Disable $WLANN${SPACESN}  ""$RS""|""$CE"" ""$YS""start""$CE"") Start monitor mode"
 		echo -e """$YS"" 2""$CE"") Enable $WLANNM${SPACESM}""$YS""d2""$CE"") Disable $WLANNM${SPACESM}  ""$RS""|""$CE""  ""$YS""stop""$CE"") Stop monitor mode"
 	fi
-	echo -e """$YS"" 3""$CE"") Change MAC        ""$YS""d3""$CE"") Restore original MAC ""$RS""|""$CE""""$YS""update""$CE"") Check for updates"
+	echo -e """$YS"" 3""$CE"") Change MAC        ""$YS""d3""$CE"") Restore original MAC ""$RS""|""$CE""""$YS""update""$CE"") Show installed version"
 	if [[ -f /usr/bin/anonym8 ]]
 	then
-	echo -e """$YS"" 4""$CE"") Enable anonym8    ""$YS""d4""$CE"") Disable anonym8      ""$RS""|""$CE""""$YS""errors""$CE"") Fix some errors"
+	echo -e """$YS"" 4""$CE"") Enable anonym8    ""$YS""d4""$CE"") Disable anonym8      ""$RS""|""$CE""""$YS""errors""$CE"") Troubleshooting"
 	else
-	echo -e """$RS"" 4""$CE"") Enable anonym8    ""$RS""d4""$CE"") Disable anonym8      ""$RS""|""$CE""""$YS""errors""$CE"") Fix some errors"
+	echo -e """$RS"" 4""$CE"") Enable anonym8    ""$RS""d4""$CE"") Disable anonym8      ""$RS""|""$CE""""$YS""errors""$CE"") Troubleshooting"
 	fi
 	if [[ -f /usr/bin/anonsurf ]]
 	then
@@ -326,7 +337,7 @@ function banner
 	echo -e """$YS""14""$CE"") Metasploit        ""$YS""20""$CE"") Bruteforce login"   
 	echo -e """$YS"" 0""$CE"") Exit              ""$YS""21""$CE"") Sqlmap automated"
 	echo "Choose: "
-	read -e YORNAA
+	read -e -r YORNAA || return 1
 	#~ echo "$YORNNA"
 	#~ history -s "$YORNNA"
 	clear

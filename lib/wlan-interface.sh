@@ -107,40 +107,43 @@ function change_mac
 
 function set_interface_number
 {
-clear
-while true
-do
-echo -e "Enter the name of your wireless interface when in ""$RS""managed""$CE"" mode(""$YS""Enter""$CE""=wlan0): "
-read MANAGED
-if [[ "$MANAGED" = "" ]]
-then
-	MANAGED="wlan0"
-fi
-echo -e "Enter the name of your wireless interface when in ""$RS""monitor""$CE"" mode(""$YS""Enter""$CE""=wlan0mon): "
-read MONITOR
-if [[ "$MONITOR" = "" ]]
-then
-	MONITOR="wlan0mon"
-fi
-echo -e "Enter the name of your wired interface(""$YS""Enter""$CE""=eth0): "
-read WIRED
-if [[ "$WIRED" = "" ]]
-then
-	WIRED="eth0"
-fi
-	echo "$MANAGED" > "$LPATH"/wlan.txt
-	echo "$MONITOR" > "$LPATH"/wlanmon.txt
-	echo "$WIRED" > "$LPATH"/eth.txt
-	echo -e """$YS""Done""$CE"""
-	sleep 1
+	local MANAGED MONITOR WIRED file
 	clear
-	echo -e """$BS""If you want to change it, type ""$CE""""$YS""interface""$CE""""$BS"" any time""$CE"""
-	sleep 3
+	echo -e "Enter the name of your wireless interface when in ""$RS""managed""$CE"" mode(""$YS""Enter""$CE""=wlan0): "
+	read -r MANAGED || return 1
+	if [[ "$MANAGED" = "" ]]
+	then
+		MANAGED="wlan0"
+	fi
+	echo -e "Enter the name of your wireless interface when in ""$RS""monitor""$CE"" mode(""$YS""Enter""$CE""=wlan0mon): "
+	read -r MONITOR || return 1
+	if [[ "$MONITOR" = "" ]]
+	then
+		MONITOR="wlan0mon"
+	fi
+	echo -e "Enter the name of your wired interface(""$YS""Enter""$CE""=eth0): "
+	read -r WIRED || return 1
+	if [[ "$WIRED" = "" ]]
+	then
+		WIRED="eth0"
+	fi
+
+	for file in "$LPATH"/{wlan.txt,wlanmon.txt,eth.txt}
+	do
+		if [[ -L "$file" || ( -e "$file" && ! -f "$file" ) ]]
+		then
+			printf 'Cannot save interface settings: %s is not a regular file.\n' "$file" >&2
+			return 2
+		fi
+	done
+	printf '%s\n' "$MANAGED" > "$LPATH/wlan.txt" &&
+		printf '%s\n' "$MONITOR" > "$LPATH/wlanmon.txt" &&
+		printf '%s\n' "$WIRED" > "$LPATH/eth.txt" || return 2
+
+	echo -e "${YS}Interface settings saved${CE}"
 	echo -e "$PAKTC"
-	$READAK	
-	BACKL="1"
-	break
-done
+	$READAK || :
+	BACKL=1
 }
 
 function checkifalready
@@ -208,7 +211,7 @@ function interface_menu
 	echo -e "Your current wireless interface names are $WLANN and $WLANNM"
 	sleep 2
 	echo -e "Do you want to change you interface names?""$YNYES"": "
-	read INAG
+	read -r INAG || return 1
 	if [[ "$INAG" = "n" ]]
 	then
 		clear
@@ -217,8 +220,6 @@ function interface_menu
 		exec bash "$0"
 	else
 		clear
-		rm "$LPATH"/wlan.txt
-		rm "$LPATH"/wlanmon.txt
 		set_interface_number
 	fi
 }
